@@ -11,16 +11,21 @@ class AuthController extends Controller
     public function signUp(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
+            'name' => 'max:255|unique:users',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|string'
+            'password' => 'required|string|confirmed'
         ]);
+
+        //anonymous when there is no name
+        if ($request['name'] == null) {
+            $request['name'] = "anonymous";
+        }
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password)
-        ]);
+        ])->assignRole('player');
 
         return response()->json([
             'message' => 'Successfully created user!'

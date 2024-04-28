@@ -15,14 +15,14 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $roleAdmin = Role::create(['name' => 'Admin']);
-        $rolePlayer = Role::create(['name' => 'Player']);
+        // Reset cached roles and permissions (during web development)
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-         // Reset cached roles and permissions (durante desarrollo de la app)
-         app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        $roleAdmin = Role::create(['name' => 'Admin', 'guard_name' => 'api']);      // guard-name = api: only users authenticated (auth.php)
+        $rolePlayer = Role::create(['name' => 'Player', 'guard_name' => 'api']);
 
          /*create permissions
-        Permission::create(['name' => 'signup'])->syncRoles([$roleAdmin, $rolePlayer]); //assignRole() si es 1
+        Permission::create(['name' => 'signup'])->syncRoles([$roleAdmin, $rolePlayer]); //assignRole() for only 1
         Permission::create(['name' => 'login'])->syncRoles([$roleAdmin, $rolePlayer]);
         Permission::create(['name' => 'logout'])->syncRoles([$roleAdmin, $rolePlayer]);
         Permission::create(['name' => 'user'])->syncRoles([$roleAdmin, $rolePlayer]);
@@ -36,8 +36,14 @@ class RoleSeeder extends Seeder
         $user->assignRole($roleAdmin);
 
         $user = \App\Models\User::factory()->create([
-            'name' => 'Example Player',
-            'email' => 'player@example.com',
+            'name' => 'Example Player1',
+            'email' => 'player1@example.com',
+        ]);
+        $user->assignRole($rolePlayer);
+
+        $user = \App\Models\User::factory()->create([
+            'name' => 'Example Player2',
+            'email' => 'player2@example.com',
         ]);
         $user->assignRole($rolePlayer);
     }

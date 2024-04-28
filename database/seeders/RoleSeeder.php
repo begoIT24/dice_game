@@ -18,10 +18,10 @@ class RoleSeeder extends Seeder
         // Reset cached roles and permissions (during web development)
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $roleAdmin = Role::create(['name' => 'admin', 'guard_name' => 'api']);      // guard-name = api: only users authenticated (auth.php)
-        $rolePlayer = Role::create(['name' => 'player', 'guard_name' => 'api']);
+        $roleAdmin = Role::create(['name' => 'admin']);      // 'guard_name' => 'api: only users authenticated (auth.php)
+        $rolePlayer = Role::create(['name' => 'player']);
 
-        Permission::create(['name' => 'access management'])->syncRoles([$roleAdmin, $rolePlayer]);
+        Permission::create(['name' => 'login management'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'signup'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'login'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'logout'])->syncRoles([$roleAdmin, $rolePlayer]);

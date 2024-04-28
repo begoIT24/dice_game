@@ -18,33 +18,29 @@ class RoleSeeder extends Seeder
         // Reset cached roles and permissions (during web development)
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $roleAdmin = Role::create(['name' => 'Admin', 'guard_name' => 'api']);      // guard-name = api: only users authenticated (auth.php)
-        $rolePlayer = Role::create(['name' => 'Player', 'guard_name' => 'api']);
+        $roleAdmin = Role::create(['name' => 'admin', 'guard_name' => 'api']);      // guard-name = api: only users authenticated (auth.php)
+        $rolePlayer = Role::create(['name' => 'player', 'guard_name' => 'api']);
 
-         /*create permissions
-        Permission::create(['name' => 'signup'])->syncRoles([$roleAdmin, $rolePlayer]); //assignRole() for only 1
-        Permission::create(['name' => 'login'])->syncRoles([$roleAdmin, $rolePlayer]);
-        Permission::create(['name' => 'logout'])->syncRoles([$roleAdmin, $rolePlayer]);
-        Permission::create(['name' => 'user'])->syncRoles([$roleAdmin, $rolePlayer]);
-         */
+        Permission::create(['name' => 'access management'])->syncRoles([$roleAdmin, $rolePlayer]);
+        // Permission::create(['name' => 'signup'])->syncRoles([$roleAdmin, $rolePlayer]);
+        // Permission::create(['name' => 'login'])->syncRoles([$roleAdmin, $rolePlayer]);
+        // Permission::create(['name' => 'logout'])->syncRoles([$roleAdmin, $rolePlayer]);
+        // Permission::create(['name' => 'user'])->syncRoles([$roleAdmin, $rolePlayer]);
 
-        // create demo users
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Example Admin',
-            'email' => 'admin@example.com',
-        ]);
-        $user->assignRole($roleAdmin);
+        Permission::create(['name' => 'update name'])->syncRoles([$roleAdmin, $rolePlayer]);
+        
+        Permission::create(['name' => 'players information'])->assignRole([$roleAdmin]);
+       
+        Permission::create(['name' => 'game actions'])->assignRole([$rolePlayer]);
+       
+        // Permission::create(['name' => 'playGame'])->assignRole([$rolePlayer]);
+        // Permission::create(['name' => 'deletePlayerGames'])->assignRole([$rolePlayer]);
+        // Permission::create(['name' => 'showPlayerGames'])->assignRole([$rolePlayer]);
 
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Example Player1',
-            'email' => 'player1@example.com',
-        ]);
-        $user->assignRole($rolePlayer);
 
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Example Player2',
-            'email' => 'player2@example.com',
-        ]);
-        $user->assignRole($rolePlayer);
+
+
+
+       
     }
 }

@@ -36,20 +36,21 @@ Route::group([
     });
 });
 
-// Rutas ADMIN
-Route::get('/players', [UserController::class, 'getPlayers'])->middleware(['auth:api', 'role:admin']);
-Route::get('/players', [UserController::class, 'getPlayerGames'])->middleware(['auth:api', 'role:admin']);
-Route::get('/players/ranking', [UserController::class, 'getRanking'])->middleware(['auth:api', 'role:admin']);
-Route::get('/players/ranking/loser', [UserController::class, 'getLoser'])->middleware(['auth:api', 'role:admin']);
-Route::get('/players/ranking/winner', [UserController::class, 'getWinner'])->middleware(['auth:api', 'role:admin']);
+//Route::put('/players/{id}', [UserController::class, 'updateName'])->middleware('auth:api', 'role:admin,player');
 
-// Ruta USER (ADMIN y PLAYER)
-Route::put('/players/{id}', [UserController::class, 'updateName'])->middleware('auth:api', 'role:admin,player');
+Route::put('/players/{id}', [UserController::class, 'updateName'])->middleware('auth:api');
+
+// Rutas ADMIN
+Route::get('/players', [UserController::class, 'getPlayers'])->middleware('auth:api');
+Route::get('/players', [UserController::class, 'getPlayerGames'])->middleware('auth:api');
+Route::get('/players/ranking', [UserController::class, 'getRanking'])->middleware('auth:api');
+Route::get('/players/ranking/loser', [UserController::class, 'getLoser'])->middleware('auth:api');
+Route::get('/players/ranking/winner', [UserController::class, 'getWinner'])->middleware('auth:api');
 
 // Rutas PLAYER
-Route::post('/players/{id}/games', [GameController::class, 'playGame'])->middleware('auth:api', 'role:player');
-Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames'])->middleware('auth:api', 'role:player');
-Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames'])->middleware('auth:api', 'role:player');
+Route::post('/players/{id}/games', [GameController::class, 'playGame'])->middleware('auth:api');
+Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames'])->middleware('auth:api');
+Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames'])->middleware('auth:api');
 
 
 

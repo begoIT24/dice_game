@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -67,5 +68,10 @@ class Kernel extends HttpKernel
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        
+        'players information' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'login management' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'update name' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'game actions'=> \Spatie\Permission\Middleware\PermissionMiddleware::class,
     ];
 }

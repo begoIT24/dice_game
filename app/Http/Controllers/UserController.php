@@ -39,8 +39,16 @@ class UserController extends Controller
 
     }
 
-    public function updateName(){
+    public function updateName(Request $request, $id)
+    {
+        $data = $request->validate([
+            'name' => 'max:255|unique:users',
+        ]);
+        $user = User::findOrFail($id);
+        $user->name = $data['name'];
+        $user->save();
 
+        return response(['user' => new UserResource($user), 'message' => 'Success'], 200);
     }
   
     /**

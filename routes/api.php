@@ -36,20 +36,19 @@ Route::group([
     });
 });
 
-//Route::put('/players/{id}', [UserController::class, 'updateName'])->middleware('auth:api', 'role:admin,player');
+Route::put('/players/{id}', [UserController::class, 'updateName'])->middleware('auth:api', 'role:admin,player');
 
-Route::put('/players/{id}', [UserController::class, 'updateName'])->middleware('auth:api');
-
+Route::get('/players', [UserController::class, 'getPlayers'])->middleware('auth:api', 'role:admin');
 // Rutas ADMIN
-Route::group([
-    'middleware' => ['auth:api', 'role:admin']
-  ], function() {
-    Route::get('/players', [UserController::class, 'getPlayers']);
-    Route::get('/players', [UserController::class, 'getPlayerGames']);
-    Route::get('/players/ranking', [UserController::class, 'getRanking']);
-    Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
-    Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
-  });
+// Route::group([
+//     'middleware' => ['auth:api', 'role:admin']
+//   ], function() {
+//     Route::get('/players', [UserController::class, 'getPlayers']);
+//     Route::get('/players', [UserController::class, 'getPlayerGames']);
+//     Route::get('/players/ranking', [UserController::class, 'getRanking']);
+//     Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
+//     Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
+//   });
 
 // Rutas PLAYER
 Route::group([

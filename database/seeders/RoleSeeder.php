@@ -21,26 +21,17 @@ class RoleSeeder extends Seeder
         $roleAdmin = Role::create(['name' => 'admin']);      // 'guard_name' => 'api: only users authenticated (auth.php)
         $rolePlayer = Role::create(['name' => 'player']);
 
-        Permission::create(['name' => 'login management'])->syncRoles([$roleAdmin, $rolePlayer]);
+        Permission::create(['name' => 'login management'])->syncRoles([$roleAdmin, $rolePlayer]);   //Permission 1
         // Permission::create(['name' => 'signup'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'login'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'logout'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'user'])->syncRoles([$roleAdmin, $rolePlayer]);
 
-        Permission::create(['name' => 'update name'])->syncRoles([$roleAdmin, $rolePlayer]);
-        
-        Permission::create(['name' => 'players information'])->assignRole([$roleAdmin]);
-       
-        Permission::create(['name' => 'game actions'])->assignRole([$rolePlayer]);
-       
+        Permission::create(['name' => 'update name'])->syncRoles([$roleAdmin, $rolePlayer]);        //Permission 2     
+        Permission::create(['name' => 'players information'])->assignRole([$roleAdmin]);            //Permission 3
+        Permission::create(['name' => 'game actions'])->assignRole([$rolePlayer]);                  //Permission 4
         // Permission::create(['name' => 'playGame'])->assignRole([$rolePlayer]);
         // Permission::create(['name' => 'deletePlayerGames'])->assignRole([$rolePlayer]);
-        // Permission::create(['name' => 'showPlayerGames'])->assignRole([$rolePlayer]);
-
-
-
-
-
-       
+        // Permission::create(['name' => 'showPlayerGames'])->assignRole([$rolePlayer]);    
     }
 }

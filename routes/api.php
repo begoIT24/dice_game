@@ -41,17 +41,24 @@ Route::group([
 Route::put('/players/{id}', [UserController::class, 'updateName'])->middleware('auth:api');
 
 // Rutas ADMIN
-Route::get('/players', [UserController::class, 'getPlayers'])->middleware('auth:api');
-Route::get('/players', [UserController::class, 'getPlayerGames'])->middleware('auth:api');
-Route::get('/players/ranking', [UserController::class, 'getRanking'])->middleware('auth:api');
-Route::get('/players/ranking/loser', [UserController::class, 'getLoser'])->middleware('auth:api');
-Route::get('/players/ranking/winner', [UserController::class, 'getWinner'])->middleware('auth:api');
+Route::group([
+    'middleware' => ['auth:api', 'role:admin']
+  ], function() {
+    Route::get('/players', [UserController::class, 'getPlayers']);
+    Route::get('/players', [UserController::class, 'getPlayerGames']);
+    Route::get('/players/ranking', [UserController::class, 'getRanking']);
+    Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
+    Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
+  });
 
 // Rutas PLAYER
-Route::post('/players/{id}/games', [GameController::class, 'playGame'])->middleware('auth:api');
-Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames'])->middleware('auth:api');
-Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames'])->middleware('auth:api');
-
+Route::group([
+    'middleware' => 'auth:api'
+  ], function() {
+    Route::post('/players/{id}/games', [GameController::class, 'playGame']);
+    Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames']);
+    Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames']);
+});
 
 
     

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
 
 
 class UserController extends Controller
@@ -18,7 +19,8 @@ class UserController extends Controller
     }
 
     public function getPlayers(){
-
+        $players = User::role('player') -> orderBy('successRate', 'asc') -> paginate(10);
+        return UserResource::collection($players);      
     }
     
     public function getPlayerGames(){

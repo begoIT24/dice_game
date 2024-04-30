@@ -19,18 +19,21 @@ class DatabaseSeeder extends Seeder
         $user = \App\Models\User::factory()->create([
             'name' => 'Example Admin',
             'email' => 'admin@example.com',
+            'password' => '1234'
         ]);
         $user->assignRole('admin');
 
         $user = \App\Models\User::factory()->create([
             'name' => 'Example Player1',
             'email' => 'player1@example.com',
+            'password' => '1234'
         ]);
         $user->assignRole('player');
 
         $user = \App\Models\User::factory()->create([
             'name' => 'Example Player2',
             'email' => 'player2@example.com',
+            'password' => '1234'
         ]);
         $user->assignRole('player');
     }

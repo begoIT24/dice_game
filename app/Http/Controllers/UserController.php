@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
+    //Middleware filter from controller, not from api routes
     public function __construct(){
          $this->middleware('can:players information', [
              'only' => ['getPlayers', 'getPlayerGames', 'getRanking', 'getLoser', 'getWinner']
@@ -19,7 +20,7 @@ class UserController extends Controller
      }
 
     public function getPlayers(){
-        $players = User::role('player') -> orderBy('successRate', 'asc') -> paginate(10);
+        $players = User::role('player') -> orderBy('successRate', 'asc') -> paginate(10);   // ->get(); sin paginación
         return UserResource::collection($players);      
     }
     

@@ -10,21 +10,22 @@ use App\Http\Resources\UserResource;
 class UserController extends Controller
 {
     public function __construct(){
-        $this->middleware('can: players information', [
-            'only' => ['getPlayers', 'getPlayerGames', 'getRanking', 'getLoser', 'getWinner']
-        ]);
-        $this->middleware('can: update name', [
-            'only' => ['updateName']
-        ]);
-    }
+         $this->middleware('can:players information', [
+             'only' => ['getPlayers', 'getPlayerGames', 'getRanking', 'getLoser', 'getWinner']
+         ]);
+         $this->middleware('can:update name', [
+             'only' => ['updateName']
+         ]);
+     }
 
     public function getPlayers(){
         $players = User::role('player') -> orderBy('successRate', 'asc') -> paginate(10);
         return UserResource::collection($players);      
     }
     
-    public function getPlayerGames(){
-
+    public function getPlayerGames($id){
+        $user = User::findOrFail($id);
+        return response(['user' => new UserResource($user), 'message' => 'Success'], 200);
     }
     
     public function getRanking(){

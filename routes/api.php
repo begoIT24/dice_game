@@ -35,11 +35,19 @@ Route::group([
         Route::get('user', [AuthController::class, 'user']);
     });
 });
-
-Route::put('/players/{id}', [UserController::class, 'updateName'])->middleware('auth:api', 'role:admin,player');
-
-Route::get('/players', [UserController::class, 'getPlayers'])->middleware('auth:api', 'role:admin');
 // Rutas ADMIN
+Route::group([
+  'prefix' => 'dice_game',  'middleware' => 'auth:api'
+], function () { 
+  Route::get('/players', [UserController::class, 'getPlayers']);
+  Route::get('/players/{id}', [UserController::class, 'getPlayerGames']);
+  Route::get('/players/ranking', [UserController::class, 'getRanking']);
+  Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
+  Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
+});
+
+Route::put('/players/{id}', [UserController::class, 'updateName']);
+
 // Route::group([
 //     'middleware' => ['auth:api', 'role:admin']
 //   ], function() {

@@ -16,20 +16,20 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         // Reset cached roles and permissions (during web development)
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        //app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $roleAdmin = Role::create(['name' => 'admin']);      // 'guard_name' => 'api: only users authenticated (auth.php)
-        $rolePlayer = Role::create(['name' => 'player']);
+        $roleAdmin = Role::create(['name' => 'admin', 'guard_name' => 'api']); 
+        $rolePlayer = Role::create(['name' => 'player', 'guard_name' => 'api']);
 
-        Permission::create(['name' => 'login management'])->syncRoles([$roleAdmin, $rolePlayer]);   //Permission 1
+        Permission::create(['name' => 'login management', 'guard_name' => 'api'])->syncRoles([$roleAdmin, $rolePlayer]);   //Permission 1
         // Permission::create(['name' => 'signup'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'login'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'logout'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'user'])->syncRoles([$roleAdmin, $rolePlayer]);
 
-        Permission::create(['name' => 'update name'])->syncRoles([$roleAdmin, $rolePlayer]);        //Permission 2     
-        Permission::create(['name' => 'players information'])->assignRole([$roleAdmin]);            //Permission 3
-        Permission::create(['name' => 'game actions'])->assignRole([$rolePlayer]);                  //Permission 4
+        Permission::create(['name' => 'update name', 'guard_name' => 'api'])->syncRoles([$roleAdmin, $rolePlayer]);        //Permission 2     
+        Permission::create(['name' => 'players information', 'guard_name' => 'api'])->assignRole([$roleAdmin]);            //Permission 3
+        Permission::create(['name' => 'game actions', 'guard_name' => 'api'])->assignRole([$rolePlayer]);                  //Permission 4
         // Permission::create(['name' => 'playGame'])->assignRole([$rolePlayer]);
         // Permission::create(['name' => 'deletePlayerGames'])->assignRole([$rolePlayer]);
         // Permission::create(['name' => 'showPlayerGames'])->assignRole([$rolePlayer]);    

@@ -25,19 +25,19 @@ class DatabaseSeeder extends Seeder
         ]);       
         $user->assignRole($adminRole);
 
-        $adminRole = Role::where('name', 'player')->where('guard_name', 'api')->first();
+        $playerRole = Role::where('name', 'player')->where('guard_name', 'api')->first();
         $user = \App\Models\User::factory()->create([
             'name' => 'Example Player1',
             'email' => 'player1@example.com',
             'password' => '1234'
         ]);
-        $user->assignRole($adminRole);
+        $user->assignRole($playerRole);
 
         $user = \App\Models\User::factory()->create([
             'name' => 'Example Player2',
             'email' => 'player2@example.com',
             'password' => '1234'
         ]);
-        $user->assignRole($adminRole);
+        $user->assignRole($playerRole);
     }
 }

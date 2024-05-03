@@ -36,7 +36,7 @@ class UserController extends Controller
             $totalGamesPlayed += $player->playedGames;
             $totalGamesWon += $player->WonGames;
         } 
-           
+
         if ($totalGamesPlayed > 0) {
             $averageRanking = ($totalGamesWon / $totalGamesPlayed) * 100;
         } else {
@@ -56,18 +56,30 @@ class UserController extends Controller
     }
 
     public function updateName(Request $request, $id)
-    {
-        $data = $request->validate([
-            'name' => 'max:255|unique:users',
-        ]);
-        if ($data['name'] == null) {
-            $data['name'] = "anonymous";
+    {   
+        try {        
+            $data = $request->validate([
+                'name' => 'max:255|unique:users,name,' . $id,  // se excluye el nombre actual de la validación
+            ]);
+        
+            if ($data['name'] === null) {
+                $data['name'] = "anonymous";
+            }
+
+            $user = User::findOrFail($id);
+           
+            $user->name = $data['name'];
+
+            $user->save();
+
+        } catch (\Illuminate\Validation\ValidationException){            
+            return response(['error' => 'The name already exists'], 422);
+        
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {      
+            return response(['error' => 'Player not found'], 404);
         }
-        $user = User::findOrFail($id);
-        $user->name = $data['name'];
-        $user->save();
 
         return response(['user' => new UserResource($user), 'message' => 'Request Successful'], 200);
-    }  
+    }
    
 }

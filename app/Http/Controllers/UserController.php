@@ -48,11 +48,20 @@ class UserController extends Controller
 
     public function getLoser()
     {
+        $players = User::role('player')->orderBy('successRate', 'asc')->take(1)->get();
 
+        return response([
+            'Loser Player' => UserResource::collection($players),
+            'message' => 'Request Successful'], 200);
     }
 
-    public function getWinner(){
+    public function getWinner()
+    {
+        $players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();
 
+        return response([
+            'Winner Player' => UserResource::collection($players),
+            'message' => 'Request Successful'], 200);
     }
 
     public function updateName(Request $request, $id)

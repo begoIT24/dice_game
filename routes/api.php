@@ -39,8 +39,7 @@ Route::group([
 Route::group([
   'prefix' => 'dice_game',  'middleware' => 'auth:api'
 ], function () { 
-  Route::get('/players', [UserController::class, 'getPlayers']);
-  Route::get('/players/{id}', [UserController::class, 'getPlayerGames']);
+  Route::get('/players', [UserController::class, 'getAllPlayers']);
   Route::get('/players/ranking', [UserController::class, 'getRanking']);
   Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
   Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);

@@ -15,26 +15,26 @@ class GameController extends Controller
       $dice1 = rand(1, 6);
       $dice2 = rand(1, 6);
 
-      $resultWin = $this->winLogic($dice1, $dice2);
+      $winGame = $this->winLogic($dice1, $dice2);
 
-      if ($resultWin) {
-          $resultGame = "You has won!";
+      if ($winGame) {
+          $winGame = "You has won!";
       } else {
-          $resultGame = "You has lost";
+          $winGame = "You has lost";
       }
 
       $game = new Game;
       $game->user_id = $idPlayer;
       $game->dice1Value = $dice1;
       $game->dice2Value = $dice2;
-      $game->resultWin = $resultWin;
+      $game->resultWin = $winGame;
       $game->save();   //save actual game
 
       //update number of played and won games for actual user
       $game->user->playedGames++;
       $game->user->save();
 
-      if ($resultWin) {       
+      if ($winGame) {       
         $game->user->wonGames++;
         $game->user->save();
       }
@@ -46,7 +46,7 @@ class GameController extends Controller
       $game->user->successRate =  $successRate;
       $game->user->save();
      
-      return response(['message' => 'Request successful', $resultGame ], 200);          
+      return response(['message' => 'Request successful', $winGame ], 200);          
     }
 
     private function winLogic($dice1, $dice2): bool

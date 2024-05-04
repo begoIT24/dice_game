@@ -16,12 +16,7 @@ use App\Http\Controllers\UserController;
 |
 */
 
-/* Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-}); */
-
-
-//Rutas de creación y acceso de USER con autenticación
+//USER login system routes with authentication (passport)
 Route::group([
      'prefix' => 'dice_game'
     ], function () {
@@ -35,7 +30,8 @@ Route::group([
         Route::get('user', [AuthController::class, 'user']);
     });
 });
-// Rutas ADMIN
+
+//ADMIN routes
 Route::group([
   'prefix' => 'dice_game',  'middleware' => 'auth:api'
 ], function () { 
@@ -45,27 +41,18 @@ Route::group([
   Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
 });
 
-Route::put('/players/{id}', [UserController::class, 'updateName']);
-
-// Route::group([
-//     'middleware' => ['auth:api', 'role:admin']
-//   ], function() {
-//     Route::get('/players', [UserController::class, 'getPlayers']);
-//     Route::get('/players', [UserController::class, 'getPlayerGames']);
-//     Route::get('/players/ranking', [UserController::class, 'getRanking']);
-//     Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
-//     Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
-//   });
-
-// Rutas PLAYER
+//ADMIN & PLAYER routes
 Route::group([
-    'middleware' => 'auth:api'
-  ], function() {
-    Route::post('/players/{id}/games', [GameController::class, 'playGame']);
-    Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames']);
-    Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames']);
+  'prefix' => 'dice_game', 'middleware' => 'auth:api'
+], function() {
+  Route::put('/players/{id}', [UserController::class, 'updateName']);
+  Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames']);
+  Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames']);
 });
 
+//PLAYER route
+  Route::post('/players/{id}/games', [GameController::class, 'playGame'])->middleware('auth:api');
+    
 
     
 

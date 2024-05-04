@@ -25,8 +25,8 @@ class UserController extends Controller
         $players = User::role('player') -> orderBy('successRate', 'desc') -> paginate(10);   // ->get(); sin paginación
         return response([UserResource::collection($players), 'message' => 'Request Successful'], 200);      
     }    
-   
-    public function getRanking()
+    
+       public function getRanking()
     {
         $players = User::role('player')->get();
         $totalGamesPlayed = 0;
@@ -34,33 +34,40 @@ class UserController extends Controller
 
         foreach ($players as $player) {
             $totalGamesPlayed += $player->playedGames;
-            $totalGamesWon += $player->WonGames;
+            $totalGamesWon += $player->wonGames;
         } 
 
         if ($totalGamesPlayed > 0) {
-            $averageRanking = ($totalGamesWon / $totalGamesPlayed) * 100;
+           $averageRanking = ($totalGamesWon / $totalGamesPlayed) * 100;
         } else {
             $averageRanking = 0;
         }    
-        return $averageRanking;
+        return response([
+            'averageRanking' => $averageRanking,
+            'message' => 'Request Successful'
+        ], 200);
     }
           
 
     public function getLoser()
     {
-        $players = User::role('player')->orderBy('successRate', 'asc')->take(1)->get();
+        $players = User::role('player')
+        ->orderByRaw('(wonGames / playedGames * 100) asc')->take(1)->get();
 
         return response([
-            'Loser Player' => UserResource::collection($players),
+            'Loser player' => UserResource::collection($players),
             'message' => 'Request Successful'], 200);
     }
 
     public function getWinner()
     {
-        $players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();
+        //$players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();
+        $players = User::role('player')
+        ->orderByRaw('(wonGames / playedGames * 100) desc')->take(1)->get();
+
 
         return response([
-            'Winner Player' => UserResource::collection($players),
+            'Winner player' => UserResource::collection($players),
             'message' => 'Request Successful'], 200);
     }
 

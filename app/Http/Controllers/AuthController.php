@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Controllers\CarbonController;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -20,12 +21,12 @@ class AuthController extends Controller
         if ($request['name'] == null) {
             $request['name'] = "anonymous";
         }
-
+        $playerRole = Role::where('name', 'player')->where('guard_name', 'api')->first();
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password)
-        ])->assignRole('player');
+        ])->assignRole($playerRole);
 
         return response()->json([
             'message' => 'Successfully created user!'
@@ -39,7 +40,8 @@ class AuthController extends Controller
     {
         $credentials = $request->validate([
             'email' => 'required|string|email',
-            'password' => 'required|string'            
+            'password' => 'required|string',
+            'guard' => 'api',          
         ]);
 
         if (!auth()->attempt($credentials))

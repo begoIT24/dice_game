@@ -4,86 +4,98 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
+
 
 class UserController extends Controller
 {
-    public function getPlayers(){
+    //Middleware role/permission filter from controller, not from api routes
+    public function __construct()
+    {
+         $this->middleware('can:players information', [
+             'only' => ['getAllPlayers', 'getRanking', 'getLoser', 'getWinner']
+         ]);
+         $this->middleware('can:update name', [
+             'only' => ['updateName']
+         ]);
+     }
 
-    }
+    public function getAllPlayers()
+    {
+        $players = User::role('player') -> orderBy('successRate', 'desc') -> paginate(10);   // ->get(); sin paginación
+        return response([UserResource::collection($players), 'message' => 'Request Successful'], 200);      
+    }    
     
-    public function getPlayerGames(){
-
-    }
-    
-    public function getRanking(){
-
-    }
-
-    public function getLoser(){
-
-    }
-
-    public function getWinner(){
-
-    }
-
-    public function updateName(){
-
-    }
-  
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+       public function getRanking()
     {
-        //
+        $players = User::role('player')->get();
+        $totalGamesPlayed = 0;
+        $totalGamesWon = 0;       
+
+        foreach ($players as $player) {
+            $totalGamesPlayed += $player->playedGames;
+            $totalGamesWon += $player->wonGames;
+        } 
+
+        if ($totalGamesPlayed > 0) {
+           $averageRanking = ($totalGamesWon / $totalGamesPlayed) * 100;
+        } else {
+            $averageRanking = 0;
+        }    
+        return response([
+            'averageRanking' => $averageRanking,
+            'message' => 'Request Successful'
+        ], 200);
+    }
+          
+
+    public function getLoser()
+    {
+        $players = User::role('player')
+        ->orderByRaw('(wonGames / playedGames * 100) asc')->take(1)->get();
+
+        return response([
+            'Loser player' => UserResource::collection($players),
+            'message' => 'Request Successful'], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function getWinner()
     {
-        //
+        //$players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();
+        $players = User::role('player')
+        ->orderByRaw('(wonGames / playedGames * 100) desc')->take(1)->get();
+
+
+        return response([
+            'Winner player' => UserResource::collection($players),
+            'message' => 'Request Successful'], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    public function updateName(Request $request, $id)
+    {   
+        try {        
+            $data = $request->validate([
+                'name' => 'max:255|unique:users,name,' . $id,  // se excluye el nombre actual de la validación
+            ]);
+        
+            if ($data['name'] === null) {
+                $data['name'] = "anonymous";
+            }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
+            $user = User::findOrFail($id);
+           
+            $user->name = $data['name'];
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
-    }
+            $user->save();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
+        } catch (\Illuminate\Validation\ValidationException){            
+            return response(['error' => 'The name already exists'], 422);
+        
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {      
+            return response(['error' => 'Player not found'], 404);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
+        return response(['user' => new UserResource($user), 'message' => 'Request Successful'], 200);
     }
+   
 }

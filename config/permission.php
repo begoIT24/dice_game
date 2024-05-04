@@ -3,6 +3,10 @@
 return [
 
     'models' => [
+        
+        'user' => App\Models\User::class,
+
+        'guard_name' => 'api',
 
         /*
          * When using the "HasPermissions" trait from this package, we need to know which

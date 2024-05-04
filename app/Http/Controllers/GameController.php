@@ -15,7 +15,8 @@ class GameController extends Controller
 
       $dice1 = rand(1, 6);
       $dice2 = rand(1, 6);
-
+      
+      //private function winLogic (logic of the game)
       $winGame = $this->winLogic($dice1, $dice2);
 
       $game = new Game;
@@ -48,11 +49,11 @@ class GameController extends Controller
     private function winLogic($dice1, $dice2): bool
     {
         if (($dice1 + $dice2) == 7) {
-            $resultWin = true;
+            $winGame = true;
         } else {
-            $resultWin = false;
+            $winGame = false;
         }
-        return $resultWin;
+        return $winGame;
     }
 
 

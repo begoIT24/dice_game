@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use Illuminate\Http\Request;
+use App\Http\Resources\GameResource;
 
 class GameController extends Controller
 {
@@ -17,17 +18,11 @@ class GameController extends Controller
 
       $winGame = $this->winLogic($dice1, $dice2);
 
-      if ($winGame) {
-          $winGame = "You has won!";
-      } else {
-          $winGame = "You has lost";
-      }
-
       $game = new Game;
       $game->user_id = $idPlayer;
-      $game->dice1Value = $dice1;
-      $game->dice2Value = $dice2;
-      $game->resultWin = $winGame;
+      $game->dice1 = $dice1;
+      $game->dice2 = $dice2;
+      $game->winGame = $winGame;
       $game->save();   //save actual game
 
       //update number of played and won games for actual user
@@ -46,7 +41,8 @@ class GameController extends Controller
       $game->user->successRate =  $successRate;
       $game->user->save();
      
-      return response(['message' => 'Request successful', $winGame ], 200);          
+      return response(['game' => new GameResource($game),
+                       'message' => 'Request successful'], 200);          
     }
 
     private function winLogic($dice1, $dice2): bool

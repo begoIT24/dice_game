@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\GameResource;
+use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
@@ -17,42 +18,52 @@ class GameController extends Controller
         ]);       
     }
 
-   public function playGame(Request $request)
+   public function playGame($id)
    {           
-        $idPlayer = $request->user()->id;      
+        try {
+            $user = Auth::user();
+                        
+            //authenticated selfplayer 
+            if ($user->id != $id) {
+                return response(['error' => 'Unauthorized'], 403);
+            }     
 
-        $dice1 = rand(1, 6);
-        $dice2 = rand(1, 6);
-            
-        //private function winLogic (logic of the game)
-        $winGame = $this->winLogic($dice1, $dice2);
+            $dice1 = rand(1, 6);
+            $dice2 = rand(1, 6);
+                
+            //private function winLogic (logic of the game)
+            $winGame = $this->winLogic($dice1, $dice2);
 
-        $game = new Game;
-        $game->user_id = $idPlayer;
-        $game->dice1 = $dice1;
-        $game->dice2 = $dice2;
-        $game->winGame = $winGame;
-        $game->save();   //save actual game
+            $game = new Game;
+            $game->user_id = $id;
+            $game->dice1 = $dice1;
+            $game->dice2 = $dice2;
+            $game->winGame = $winGame;
+            $game->save();   //save actual game
 
-        //update number of played and won games for actual user
-        $game->user->playedGames++;
-        $game->user->save();
-
-        if ($winGame) {       
-            $game->user->wonGames++;
+            //update number of played and won games for actual user
+            $game->user->playedGames++;
             $game->user->save();
-        }
 
-        //update successRate at users table
-        $playedGames = $game->user->playedGames;
-        $wonGames = $game->user->wonGames;
-        $successRate = ($wonGames / $playedGames) * 100;
-        $game->user->successRate =  $successRate;
-        $game->user->save();
+            if ($winGame) {       
+                $game->user->wonGames++;
+                $game->user->save();
+            }
+
+            //update successRate at users table
+            $playedGames = $game->user->playedGames;
+            $wonGames = $game->user->wonGames;
+            $successRate = ($wonGames / $playedGames) * 100;
+            $game->user->successRate =  $successRate;
+            $game->user->save();
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $exception) {      
+            return response(['error' => 'Player not found'], 404);
+        }
        
         return response(['game' => new GameResource($game),
                         'message' => 'Request successful'], 200);          
-    }
+    }    
 
     private function winLogic($dice1, $dice2): bool
     {
@@ -64,11 +75,21 @@ class GameController extends Controller
         return $winGame;
     }    
    
-   public function deletePlayerGames(Request $request)
+   public function deletePlayerGames($id)
    {
-        $idPlayer = ($request->user()->id) - 1;
+        try {
+            $user = Auth::user();
 
-        $deleted = Game::where('user_id', $idPlayer)->delete();
+            //authenticated selfplayer 
+            if ($user->id != $id) {
+                return response(['error' => 'Unauthorized'], 403);
+            }
+            
+            $deleted = Game::where('user_id', $id)->delete();
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $exception) {      
+            return response(['error' => 'Player not found'], 404);
+        }
 
         if($deleted){   
             return response(['message' => 'Request succesful'], 200);
@@ -77,24 +98,28 @@ class GameController extends Controller
         }
    }
 
-   public function showPlayerGames(Request $request)
+   public function showPlayerGames($id)
    {
-        try {     
-            $idPlayer = $request->user()->id - 1;
-
-            $playerGames = User::findOrFail($idPlayer)->games;
-        
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {      
+        try {
+            $user = Auth::user();
+            $playerGames = User::findOrFail($id)->games;
+            
+            //authenticated selfplayer 
+            if ($user->id != $id) {
+                return response(['error' => 'Unauthorized'], 403);
+            }
+          
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $exception) {      
             return response(['error' => 'Player not found'], 404);
         }
-        
-       if (sizeof($playerGames) == 0) {
-             return response(['message' => 'You have no games'], 200);
+
+        if ($playerGames->isEmpty()) {
+            return response(['message' => 'You have no games'], 200);
         } else {
             return response(['Your games' => GameResource::collection($playerGames),
-                             'message' => 'Request succesful'], 200);
+                             'message' => 'Request successful'], 200);   
         }
-        // return response (['player id'=> $idPlayer]);
+        // return response (['player id'=> $idPlayer]);    
     }
 }
 

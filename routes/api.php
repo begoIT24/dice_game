@@ -54,7 +54,7 @@ Route::group([
 Route::group([
   'prefix' => 'dice_game', 'middleware' => 'auth:api'
 ], function() {  
-  Route::get('/players/{id}/play', [GameController::class, 'playGame']); //get('/players/{id}/games'
+  Route::post('/players/{id}/games', [GameController::class, 'playGame']); //get('/players/{id}/games'
 });
     
 

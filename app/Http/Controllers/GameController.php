@@ -67,20 +67,34 @@ class GameController extends Controller
    
    public function deletePlayerGames(Request $request)
    {
-    $idPlayer = ($request->user()->id) - 1;
+        $idPlayer = ($request->user()->id) - 1;
 
-    $deleted = Game::where('user_id', $idPlayer)->delete();
+        $deleted = Game::where('user_id', $idPlayer)->delete();
 
-    if($deleted){   
-        return response(['message' => 'Request succesful'], 200);
-     } else{
-        return response(['message' => 'Request failed', 400]);
+        if($deleted){   
+            return response(['message' => 'Request succesful'], 200);
+        } else{
+            return response(['message' => 'Request failed', 400]);
+        }
+   }
+
+   public function showPlayerGames(Request $request)
+   {
+        try {     
+            $idPlayer = $request->user()->id;
+
+            $playerGames = User::findOrFail($idPlayer)->games;
+        
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {      
+            return response(['error' => 'Player not found'], 404);
+        }
+
+        if (sizeof($playerGames) == 0) {
+            return response(['message' => 'You have no games'], 200);
+        } else {
+            return response(['Your games' =>
+            GameResource::collection($playerGames), 'message' => 'Request succesful'], 200);
+        }
     }
-   }
-
-   public function showPlayerGames(Request $request){
-    
-   }
-   
-   
 }
+

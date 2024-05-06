@@ -18,8 +18,7 @@ class GameController extends Controller
     }
 
    public function playGame(Request $request)
-   {      
-        
+   {           
         $idPlayer = $request->user()->id;      
 
         $dice1 = rand(1, 6);
@@ -81,20 +80,21 @@ class GameController extends Controller
    public function showPlayerGames(Request $request)
    {
         try {     
-            $idPlayer = $request->user()->id;
+            $idPlayer = $request->user()->id - 1;
 
             $playerGames = User::findOrFail($idPlayer)->games;
         
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {      
             return response(['error' => 'Player not found'], 404);
         }
-
-        if (sizeof($playerGames) == 0) {
-            return response(['message' => 'You have no games'], 200);
+        
+       if (sizeof($playerGames) == 0) {
+             return response(['message' => 'You have no games'], 200);
         } else {
-            return response(['Your games' =>
-            GameResource::collection($playerGames), 'message' => 'Request succesful'], 200);
+            return response(['Your games' => GameResource::collection($playerGames),
+                             'message' => 'Request succesful'], 200);
         }
+        // return response (['player id'=> $idPlayer]);
     }
 }
 

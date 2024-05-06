@@ -21,17 +21,19 @@ class RoleSeeder extends Seeder
         $roleAdmin = Role::create(['name' => 'admin', 'guard_name' => 'api']); 
         $rolePlayer = Role::create(['name' => 'player', 'guard_name' => 'api']);
 
-        Permission::create(['name' => 'login management', 'guard_name' => 'api'])->syncRoles([$roleAdmin, $rolePlayer]);   //Permission 1
+        //AuthController permissions
+        Permission::create(['name' => 'login management', 'guard_name' => 'api'])->syncRoles([$roleAdmin, $rolePlayer]); //Permission 1
         // Permission::create(['name' => 'signup'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'login'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'logout'])->syncRoles([$roleAdmin, $rolePlayer]);
         // Permission::create(['name' => 'user'])->syncRoles([$roleAdmin, $rolePlayer]);
 
-        Permission::create(['name' => 'update name', 'guard_name' => 'api'])->syncRoles([$roleAdmin, $rolePlayer]);        //Permission 2     
-        Permission::create(['name' => 'players information', 'guard_name' => 'api'])->assignRole([$roleAdmin]);            //Permission 3
-        Permission::create(['name' => 'game actions', 'guard_name' => 'api'])->assignRole([$rolePlayer]);                  //Permission 4
-        // Permission::create(['name' => 'playGame'])->assignRole([$rolePlayer]);
-        // Permission::create(['name' => 'deletePlayerGames'])->assignRole([$rolePlayer]);
-        // Permission::create(['name' => 'showPlayerGames'])->assignRole([$rolePlayer]);    
+        //UserController permissions
+        Permission::create(['name' => 'update name', 'guard_name' => 'api'])->syncRoles([$roleAdmin, $rolePlayer]);     //Permission 2     
+        Permission::create(['name' => 'players information', 'guard_name' => 'api'])->assignRole([$roleAdmin]);         //Permission 3
+       
+        //GameController permissions
+        Permission::create(['name' => 'game actions', 'guard_name' => 'api'])->assignRole([$rolePlayer]);              //Permission 4
+        
     }
 }

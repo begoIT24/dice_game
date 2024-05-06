@@ -26,7 +26,7 @@ class UserController extends Controller
         return response([UserResource::collection($players), 'message' => 'Request Successful'], 200);      
     }    
     
-       public function getRanking()
+    public function getRanking()
     {
         $players = User::role('player')->get();
         $totalGamesPlayed = 0;
@@ -46,13 +46,11 @@ class UserController extends Controller
             'averageRanking' => $averageRanking,
             'message' => 'Request Successful'
         ], 200);
-    }
-          
+    }          
 
     public function getLoser()
     {
-        $players = User::role('player')
-        ->orderByRaw('(wonGames / playedGames * 100) asc')->take(1)->get();
+        $players = User::role('player')->orderBy('successRate', 'asc')->take(1)->get();
 
         return response([
             'Loser player' => UserResource::collection($players),
@@ -61,10 +59,8 @@ class UserController extends Controller
 
     public function getWinner()
     {
-        //$players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();
-        $players = User::role('player')
-        ->orderByRaw('(wonGames / playedGames * 100) desc')->take(1)->get();
-
+        $players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();
+        //$players = User::role('player')->orderByRaw('(wonGames / playedGames * 100) desc')->take(1)->get();
 
         return response([
             'Winner player' => UserResource::collection($players),
@@ -75,7 +71,7 @@ class UserController extends Controller
     {   
         try {        
             $data = $request->validate([
-                'name' => 'max:255|unique:users,name,' . $id,  // se excluye el nombre actual de la validación
+                'name' => 'max:255|unique:users,name,', 
             ]);
         
             if ($data['name'] === null) {

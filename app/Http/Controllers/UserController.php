@@ -87,9 +87,13 @@ class UserController extends Controller
         
         $players = User::role('player')->orderBy('successRate', 'asc')->take(1)->get();
 
-        return response([
-            'Loser player' => UserResource::collection($players),
-            'message' => 'Request Successful'], 200);
+        if($players){
+            return response([
+                'Loser player' => UserResource::collection($players),
+                'message' => 'Request Successful'], 200);
+        } else {
+            return response(['error' => 'Request failed', 400]);
+        }
     }
 
     public function getWinner()
@@ -101,9 +105,13 @@ class UserController extends Controller
         
         $players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();     
 
-        return response([
-            'Winner player' => UserResource::collection($players),
-            'message' => 'Request Successful'], 200);
+        if($players){
+            return response([
+                'Loser player' => UserResource::collection($players),
+                'message' => 'Request Successful'], 200);
+        } else {
+            return response(['error' => 'Request failed', 400]);
+        }
     }
 
     public function updateName(Request $request, $id)
@@ -129,14 +137,20 @@ class UserController extends Controller
 
             $user->save();
 
+            if($user){
+                return response([
+                            'user' => new UserResource($user),
+                            'message' => 'Request Successful'], 200);
+                } else {
+                    return response(['error' => 'Request failed', 400]);
+                }
+
         } catch (\Illuminate\Validation\ValidationException){            
             return response(['error' => 'The name already exists'], 422);
         
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {      
             return response(['error' => 'Player not found'], 404);
-        }
-
-        return response(['user' => new UserResource($user), 'message' => 'Request Successful'], 200);
+        }      
     } 
     
     // Da el mismo error que hasRole:

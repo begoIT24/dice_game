@@ -9,7 +9,7 @@ use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
-    public function signUp(Request $request)
+     public function signUp(Request $request)
     {
         $request->validate([
             'name' => 'max:255|unique:users',

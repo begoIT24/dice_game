@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
-
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -22,34 +23,68 @@ class UserController extends Controller
 
     public function getAllPlayers()
     {
+        //authenticated and role admin comprobation
+        $user = Auth::user();
+        $admin = Role::where('name', 'admin')->where('guard_name', 'api')->first();
+
+        if (!$user || !$user->hasRole($admin)) {
+             return response(['error' => 'Unauthorized'], 403);
+        }
+
         $players = User::role('player') -> orderBy('successRate', 'desc') -> paginate(10);   // ->get(); sin paginación
-        return response([UserResource::collection($players), 'message' => 'Request Successful'], 200);      
+        
+        if($players){   
+            return response([UserResource::collection($players),
+                       'message' => 'Request succesful'], 200);
+        } else {
+            return response(['error' => 'Request failed', 400]);
+        }
+        //return response (['message' => $user]);
     }    
     
     public function getRanking()
     {
+        //authenticated and role admin comprobation
+        $user = Auth::user();
+        $admin = Role::where('name', 'admin');
+                  
+        if (!$user || !$user->hasRole($admin)) {
+            return response(['error' => 'Unauthorized'], 403);
+        }
+
         $players = User::role('player')->get();
-        $totalGamesPlayed = 0;
-        $totalGamesWon = 0;       
+        $successRateSum = 0;
+        $playersWithGames = 0;       
 
         foreach ($players as $player) {
-            $totalGamesPlayed += $player->playedGames;
-            $totalGamesWon += $player->wonGames;
-        } 
+            if($player->playedGames > 0)
+                $successRateSum += $player->successRate;
+                $playersWithGames++;         
+        }             
 
-        if ($totalGamesPlayed > 0) {
-           $averageRanking = ($totalGamesWon / $totalGamesPlayed) * 100;
+        if ($playersWithGames > 0) {
+           $averageRanking = $successRateSum / $playersWithGames;
         } else {
             $averageRanking = 0;
-        }    
-        return response([
-            'averageRanking' => $averageRanking,
-            'message' => 'Request Successful'
-        ], 200);
+        } 
+        
+        if($averageRanking){   
+            return response(['averageRanking' => $averageRanking,
+                             'message' => 'Request succesful'], 200);
+        } else {
+            return response(['error' => 'Request failed', 400]);
+        }       
     }          
 
     public function getLoser()
     {
+        //authenticated and role admin comprobation
+        $user = Auth::user();
+                  
+        if (!$user || !$user->hasRole('admin')) {
+            return response(['error' => 'Unauthorized'], 403);
+        }
+        
         $players = User::role('player')->orderBy('successRate', 'asc')->take(1)->get();
 
         return response([
@@ -59,8 +94,12 @@ class UserController extends Controller
 
     public function getWinner()
     {
-        $players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();
-        //$players = User::role('player')->orderByRaw('(wonGames / playedGames * 100) desc')->take(1)->get();
+        //authenticated and role admin comprobation      
+        if (!auth()->user()->hasRole('admin')) {
+             return response(['error' => 'Unauthorized'], 403);
+        }
+        
+        $players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();     
 
         return response([
             'Winner player' => UserResource::collection($players),
@@ -69,9 +108,15 @@ class UserController extends Controller
 
     public function updateName(Request $request, $id)
     {   
+         //authenticated selfplayer comprobation
+         $user = Auth::user(); 
+                  
+         if ($user->id != $id) {
+             return response(['error' => 'Unauthorized'], 403);
+          }
         try {        
             $data = $request->validate([
-                'name' => 'max:255|unique:users,name,', 
+                'name' => 'max:255|unique:users,name', 
             ]);
         
             if ($data['name'] === null) {
@@ -92,6 +137,11 @@ class UserController extends Controller
         }
 
         return response(['user' => new UserResource($user), 'message' => 'Request Successful'], 200);
-    }
-   
+    } 
+    
+    // Da el mismo error que hasRole:
+
+    // if (!auth()->user()->hasPermissionTo('players information')) {
+    //    return response(['error' => 'Unauthorized'], 403);   }
+
 }

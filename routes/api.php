@@ -41,25 +41,12 @@ Route::group([
   Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
 });
 
-//ADMIN & PLAYER routes
+//PLAYER routes
 Route::group([
   'prefix' => 'dice_game', 'middleware' => 'auth:api'
 ], function() {
-  Route::put('/players/{id}', [UserController::class, 'updateName']);
+  Route::post('/players/{id}/games', [GameController::class, 'playGame']); 
   Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames']);
   Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames']);
+  Route::put('/players/{id}', [UserController::class, 'updateName']);
 });
-
-//PLAYER route
-Route::group([
-  'prefix' => 'dice_game', 'middleware' => 'auth:api'
-], function() {  
-  Route::post('/players/{id}/games', [GameController::class, 'playGame']); //get('/players/{id}/games'
-});
-    
-
-    
-
-
-
-

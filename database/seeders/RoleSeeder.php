@@ -29,11 +29,10 @@ class RoleSeeder extends Seeder
         // Permission::create(['name' => 'user'])->syncRoles([$roleAdmin, $rolePlayer]);
 
         //UserController permissions
-        Permission::create(['name' => 'update name', 'guard_name' => 'api'])->syncRoles([$roleAdmin, $rolePlayer]);     //Permission 2     
+        Permission::create(['name' => 'update name', 'guard_name' => 'api'])->assignRole([$rolePlayer]);                 //Permission 2     
         Permission::create(['name' => 'players information', 'guard_name' => 'api'])->assignRole([$roleAdmin]);         //Permission 3
        
         //GameController permissions
-        Permission::create(['name' => 'game actions', 'guard_name' => 'api'])->assignRole([$rolePlayer]);              //Permission 4
-        
+        Permission::create(['name' => 'game actions', 'guard_name' => 'api'])->assignRole([$rolePlayer]);              //Permission 4        
     }
 }

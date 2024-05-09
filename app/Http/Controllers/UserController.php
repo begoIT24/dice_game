@@ -23,11 +23,8 @@ class UserController extends Controller
 
     public function getAllPlayers()
     {
-        //authenticated and role admin comprobation
-        $user = Auth::user();
-        $admin = Role::where('name', 'admin')->where('guard_name', 'api')->first();
-
-        if (!$user || !$user->hasRole($admin)) {
+        //authenticated and role admin comprobation        
+        if (!auth()->user()->hasRole('admin')) {
              return response(['error' => 'Unauthorized'], 403);
         }
 
@@ -39,18 +36,16 @@ class UserController extends Controller
         } else {
             return response(['error' => 'Request failed', 400]);
         }
-        //return response (['message' => $user]);
+        /* Another call option for authenticated user:
+            $user = Auth::user();
+            if (!$user->hasRole('admin')).....*/
     }    
     
     public function getRanking()
     {
-        //authenticated and role admin comprobation
-        $user = Auth::user();
-        $admin = Role::where('name', 'admin');
-                  
-        if (!$user || !$user->hasRole($admin)) {
-            return response(['error' => 'Unauthorized'], 403);
-        }
+        //authenticated and role admin comprobation              
+        if (!auth()->user()->hasRole('admin')) {
+            return response(['error' => 'Unauthorized'], 403);}
 
         $players = User::role('player')->get();
         $successRateSum = 0;
@@ -78,10 +73,8 @@ class UserController extends Controller
 
     public function getLoser()
     {
-        //authenticated and role admin comprobation
-        $user = Auth::user();
-                  
-        if (!$user || !$user->hasRole('admin')) {
+        //authenticated and role admin comprobation              
+        if (!auth()->user()->hasRole('admin')) {
             return response(['error' => 'Unauthorized'], 403);
         }
         
@@ -93,35 +86,40 @@ class UserController extends Controller
                 'message' => 'Request Successful'], 200);
         } else {
             return response(['error' => 'Request failed', 400]);
-        }
+        }         
+     /* For testing / debugging
+            $user = Auth::user(); 
+            $role = $user->hasRole('admin');
+            return response(['user' => $user, 'admin' => $role]); */  
     }
 
     public function getWinner()
     {
-        //authenticated and role admin comprobation      
+        //authenticated and role admin comprobation              
         if (!auth()->user()->hasRole('admin')) {
-             return response(['error' => 'Unauthorized'], 403);
+            return response(['error' => 'Unauthorized'], 403);
         }
         
         $players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();     
 
         if($players){
             return response([
-                'Loser player' => UserResource::collection($players),
+                'Winner player' => UserResource::collection($players),
                 'message' => 'Request Successful'], 200);
         } else {
             return response(['error' => 'Request failed', 400]);
-        }
+        }      
     }
 
     public function updateName(Request $request, $id)
     {   
-         //authenticated selfplayer comprobation
-         $user = Auth::user(); 
+        //authenticated selfplayer comprobation
+        $user = Auth::user(); 
                   
-         if ($user->id != $id) {
-             return response(['error' => 'Unauthorized'], 403);
-          }
+        if ($user->id != $id) {
+            return response(['error' => 'Unauthorized'], 403);
+        }
+
         try {        
             $data = $request->validate([
                 'name' => 'max:255|unique:users,name', 
@@ -152,10 +150,4 @@ class UserController extends Controller
             return response(['error' => 'Player not found'], 404);
         }      
     } 
-    
-    // Da el mismo error que hasRole:
-
-    // if (!auth()->user()->hasPermissionTo('players information')) {
-    //    return response(['error' => 'Unauthorized'], 403);   }
-
 }

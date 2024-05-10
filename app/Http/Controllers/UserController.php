@@ -55,13 +55,9 @@ class UserController extends Controller
             if($player->playedGames > 0)
                 $successRateSum += $player->successRate;
                 $playersWithGames++;         
-        }             
-
-        if ($playersWithGames > 0) {
-           $averageRanking = $successRateSum / $playersWithGames;
-        } else {
-            $averageRanking = 0;
-        } 
+        }
+        
+        $averageRanking = ($playersWithGames > 0) ? ($successRateSum / $playersWithGames) : 0;
         
         if($averageRanking){   
             return response(['averageRanking' => $averageRanking,

@@ -5,42 +5,39 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
-{
+{    
+    protected static ?string $password;
+    
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // role creation first
+        // role creation first        
         $this->call(RoleSeeder::class);
 
-        // create demo users
-        $adminRole = Role::where('name', 'admin')->where('guard_name', 'api')->first();
+        // create admin user
+        $adminRole = Role::where('name', 'admin')->where('guard_name', 'api')->first();       
         $user = \App\Models\User::factory()->create([
-            'name' => 'Example Admin',
+            'name' => 'Admin',
             'email' => 'admin@example.com',
-            'password' => '1234',
+            'password' => static::$password ??= Hash::make('password'),
             'email_verified_at' => now(),
+            'remember_token' => Str::random(10),
         ]);       
         $user->assignRole($adminRole);
 
-        $playerRole = Role::where('name', 'player')->where('guard_name', 'api')->first();
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Example Player1',
-            'email' => 'player1@example.com',
-            'password' => '1234',
-            'email_verified_at' => now(),
-        ]);
-        $user->assignRole($playerRole);
+        // seed of player users
+        \App\Models\User::factory()->count(10)->player()->create();
 
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Example Player2',
-            'email' => 'player2@example.com',
-            'password' => '1234',
-            'email_verified_at' => now(),
-        ]);
-        $user->assignRole($playerRole);
+        // seed of games
+        \App\Models\Game::factory()->count(50)->create();   
+
+        // update player stadistics
+        $this->call(PlayerStadisticSeeder::class);
     }
 }

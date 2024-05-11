@@ -17,6 +17,10 @@ class GameController extends Controller
         ]);       
     }
 
+    public function welcome()
+    {
+        return response()->json(['message' => 'Welcome to the Get 7 Dice Game']);
+    }
    public function playGame($id)
    {    
         //authenticated selfplayer condition
@@ -85,7 +89,7 @@ class GameController extends Controller
         $deleted = Game::where('user_id', $id)->delete();        
 
         if($deleted){   
-            return response(['message' => 'Request succesful'], 200);
+            return response(['message' => 'All games deleted'], 204);
         } else {
             return response(['error' => 'Request failed', 400]);
         }

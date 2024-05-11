@@ -14,7 +14,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'max:255|unique:users',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|confirmed'
+            'password' => 'required|string|confirmed',
         ]);
 
         //anonymous when there is no name
@@ -24,8 +24,9 @@ class AuthController extends Controller
         $playerRole = Role::where('name', 'player')->where('guard_name', 'api')->first();
         User::create([
             'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
+            'email' => $request->email,        
+            'password' => bcrypt($request->password),
+            
         ])->assignRole($playerRole);
 
         return response()->json([

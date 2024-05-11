@@ -16,7 +16,16 @@ use App\Http\Controllers\UserController;
 |
 */
 
-//USER login system routes with authentication (passport)
+// Welcome root route
+
+Route::group([
+    'prefix' => 'dice_game'
+    ], function () {
+    Route::get('/', [GameController::class, 'welcome']);
+});
+
+// USER login system routes with authentication (passport)
+
 Route::group([
      'prefix' => 'dice_game'
     ], function () {
@@ -31,22 +40,24 @@ Route::group([
     });
 });
 
-//ADMIN routes
-Route::group([
-  'prefix' => 'dice_game',  'middleware' => 'auth:api'
-], function () { 
-  Route::get('/players', [UserController::class, 'getAllPlayers']);
-  Route::get('/players/ranking', [UserController::class, 'getRanking']);
-  Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
-  Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
-});
+// ADMIN routes
 
-//PLAYER routes
 Route::group([
   'prefix' => 'dice_game', 'middleware' => 'auth:api'
-], function() {
-  Route::post('/players/{id}/games', [GameController::class, 'playGame']); 
-  Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames']);
-  Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames']);
-  Route::put('/players/{id}', [UserController::class, 'updateName']);
+  ], function () { 
+    Route::get('/players', [UserController::class, 'getAllPlayers']);
+    Route::get('/players/ranking', [UserController::class, 'getRanking']);
+    Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
+    Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
+});
+
+// PLAYER routes
+
+Route::group([
+  'prefix' => 'dice_game', 'middleware' => 'auth:api'
+  ], function() {
+    Route::post('/players/{id}/games', [GameController::class, 'playGame']); 
+    Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames']);
+    Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames']);
+    Route::put('/players/{id}', [UserController::class, 'updateName']);
 });

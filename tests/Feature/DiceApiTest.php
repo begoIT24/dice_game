@@ -3,16 +3,16 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Game;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Artisan;
 
 
 class DiceApiTest extends TestCase
 {
+   use RefreshDatabase;
+   
    public function test_set_database_config()
    {
       Artisan::call('migrate:reset');
@@ -47,12 +47,25 @@ class DiceApiTest extends TestCase
                'name',
                'email',
                'successRate'
-            ]        
+            ]
          ],
          'message'
       ]);
       // last player is on the list     
       $response->assertJsonFragment(['name' => $player->name]);
+   }
+
+   public function test_player_not_get_list_of_players()
+   {
+      /* get player user */
+      $user = User::find(2);
+      $this->actingAs($user, 'api');
+
+      /* actions */
+      $response = $this->getJson('/api/dice_game/players');
+
+      /* check final status */
+      $response->assertStatus(403);
    }
 
    public function test_admin_gets_ranking()
@@ -73,6 +86,19 @@ class DiceApiTest extends TestCase
       $this->assertIsNumeric($response['averageRanking']);
    }
 
+   public function test_player_not_get_ranking()
+   {
+      /* get player user */
+      $user = User::find(2);
+      $this->actingAs($user, 'api');
+
+      /* actions */
+      $response = $this->getJson('/api/dice_game/players/ranking');
+
+      /* check final status */
+      $response->assertStatus(403);
+   }
+
    public function  test_admin_gets_loser()
    {
       /* get admin user */
@@ -91,18 +117,31 @@ class DiceApiTest extends TestCase
       /* check final status */
       $response->assertStatus(200);
       $response->assertJsonStructure([
-         'Loser player'=> [
+         'Loser player' => [
             '*' => [
                'id',
                'name',
                'email',
                'successRate'
-            ]        
+            ]
          ],
          'message'
       ]);
       // loser player in DB matches response loser player
-      $this->assertEquals($loserPlayer->id, $responseArray['Loser player'][0]['id']);  // $response['name'] no funciona: es un array dentro de array
+      $this->assertEquals($loserPlayer->id, $responseArray['Loser player'][0]['id']);
+   }
+
+   public function  test_player_not_get_loser()
+   {
+      /* get player user */
+      $user = User::find(2);
+      $this->actingAs($user, 'api');
+
+      /* actions */
+      $response = $this->getJson('/api/dice_game/players/ranking/loser');
+
+      /* check final status */
+      $response->assertStatus(403);
    }
 
    public function test_admin_gets_winner()
@@ -116,23 +155,36 @@ class DiceApiTest extends TestCase
 
       /* actions */
       $response = $this->getJson('/api/dice_game/players/ranking/winner');
-      $responseArray= $response->json();      
+      $responseArray = $response->json();
 
       /* check final status */
       $response->assertStatus(200);
       $response->assertJsonStructure([
-         'Winner player'=> [
+         'Winner player' => [
             '*' => [
                'id',
                'name',
                'email',
                'successRate'
-            ]        
+            ]
          ],
          'message'
       ]);
       // winner player in DB matches response winner player
       $this->assertEquals($winnerPlayer->id, $responseArray['Winner player'][0]['id']);
+   }
+
+   public function  test_player_not_get_winner()
+   {
+      /* get player user */
+      $user = User::find(2);
+      $this->actingAs($user, 'api');
+
+      /* actions */
+      $response = $this->getJson('/api/dice_game/players/ranking/winner');
+
+      /* check final status */
+      $response->assertStatus(403);
    }
 
    public function test_player_updates_name()
@@ -162,6 +214,43 @@ class DiceApiTest extends TestCase
       $this->assertEquals('New Name', $updatedUser->name);
    }
 
+   public function test_player_not_update_existing_name()
+   {
+      /* get player user */
+      $user = User::find(2);
+      $this->actingAs($user, 'api');
+
+      /* get another player name */
+      $user2 = User::find(3);
+      $existingName = $user2->name;
+
+      /* actions */
+      $response = $this->putJson("/api/dice_game/players/{$user->id}", [
+         'name' => $existingName,
+      ]);
+
+      /* check final status */
+      $response->assertStatus(422);
+   }
+
+   public function test_player_not_update_another_player_name()
+   {
+      /* get player user */
+      $user = User::find(2);
+      $this->actingAs($user, 'api');
+
+      /* get another player */
+      $user2 = User::find(3);
+
+      /* actions */
+      $response = $this->putJson("/api/dice_game/players/{$user2->id}", [
+         'name' => 'New Name',
+      ]);
+
+      /* check final status */
+      $response->assertStatus(403);
+   }
+
    /* TESTS FOR GAMECONTROLLER */
 
    public function test_player_plays_game()
@@ -189,42 +278,114 @@ class DiceApiTest extends TestCase
       $this->assertEquals(($user->playedGames) + 1, $updatedUser->playedGames);
    }
 
-   public function test_player_delete_all_own_games(){
-       /* get player user */
-       $user = User::find(2);
-       $this->actingAs($user, 'api');
- 
-       /* actions */
-       $response = $this->deleteJson("/api/dice_game/players/{$user->id}/games");
-       $deletedGames = Game::where('user_id', $user->id)->count();
- 
-       /* check final status */
-       $response->assertStatus(204);
-       $this->assertEquals(0, $deletedGames);
+   public function test_player_not_play_another_player_game()
+   {
+      /* get player user */
+      $user = User::find(2);
+      $this->actingAs($user, 'api');
+
+      /* get another player */
+      $user2 = User::find(3);
+
+      /* actions */
+      $response = $this->postJson("/api/dice_game/players/{$user2->id}");
+
+      /* check final status */
+      $response->assertStatus(405);
    }
 
-   public function test_player_gets_own_list_of_games(){
+   public function test_player_with_games_deletes_all_own_games()
+   {
       /* get player user */
-      $user = User::find(3);
+      $user = User::find(10);
+      $this->actingAs($user, 'api');
+
+      /* actions */
+      $response = $this->deleteJson("/api/dice_game/players/{$user->id}/games");
+      $deletedGames = Game::where('user_id', $user->id)->count();
+
+      /* check final status */
+      $response->assertStatus(200);
+      $this->assertEquals(0, $deletedGames);
+      $response->assertExactJson([
+         'message' => 'All games deleted'
+     ]);
+   }
+
+   public function test_player_not_delete_another_player_games()
+   {
+      /* get player user */
+      $user = User::find(2);
+      $this->actingAs($user, 'api');
+
+      /* get another player */
+      $user2 = User::find(3);
+
+      /* actions */
+      $response = $this->deleteJson("/api/dice_game/players/{$user2->id}/games");
+
+      /* check final status */
+      $response->assertStatus(403);
+   }
+
+   public function test_player_not_delete_an_empty_games_list()
+   {
+      /* get player user with an empty list of games */
+      $user = User::find(11);
+      $this->actingAs($user, 'api');
+
+       /* actions */
+       $response = $this->deleteJson("/api/dice_game/players/{$user->id}/games");
+
+       /* check final status */
+      $response->assertStatus(400);
+      $response->assertExactJson([
+         'error' => 'Failed to delete games'
+     ]);     
+   }
+
+   public function test_player_gets_own_list_of_games()
+   {
+      /* get player user */
+      $user = User::find(2);
       $this->actingAs($user, 'api');
 
       /* actions */
       $response = $this->getJson("/api/dice_game/players/{$user->id}/games");
-      
+
       /* check final status */
       $response->assertStatus(200);
       $response->assertJsonStructure([
          'Your success rate',
-         'Your games' => [ 
-             '*' => [ 
-                 'Game Number',
-                 'Dice 1',
-                 'Dice 2',
-                 'Result'
-             ]
+         'Your games' => [
+            '*' => [
+               'Game Number',
+               'Dice 1',
+               'Dice 2',
+               'Result'
+            ]
          ],
          'message'
-     ]);
-     $response->assertJsonFragment(['Your success rate' => $user->successRate]);    
+      ]);
+      $response->assertJsonFragment(['Your success rate' => $user->successRate]);
    }
+
+   public function test_player_not_get_another_player_list_of_games()
+   {
+      /* get player user */
+      $user = User::find(2);
+      $this->actingAs($user, 'api');
+
+      /* get another player */
+      $user2 = User::find(3);
+
+
+      /* actions */
+      $response = $this->getJson("/api/dice_game/players/{$user2->id}/games");
+
+      /* check final status */
+      $response->assertStatus(403);
+   }
+
+   
 }

@@ -47,8 +47,9 @@ class DiceApiTest extends TestCase
                'name',
                'email',
                'successRate'
-            ]
-         ]
+            ]        
+         ],
+         'message'
       ]);
       // last player is on the list     
       $response->assertJsonFragment(['name' => $player->name]);
@@ -90,7 +91,14 @@ class DiceApiTest extends TestCase
       /* check final status */
       $response->assertStatus(200);
       $response->assertJsonStructure([
-         'Loser player',
+         'Loser player'=> [
+            '*' => [
+               'id',
+               'name',
+               'email',
+               'successRate'
+            ]        
+         ],
          'message'
       ]);
       // loser player in DB matches response loser player
@@ -108,12 +116,19 @@ class DiceApiTest extends TestCase
 
       /* actions */
       $response = $this->getJson('/api/dice_game/players/ranking/winner');
-      $responseArray = $response->json();
+      $responseArray= $response->json();      
 
       /* check final status */
       $response->assertStatus(200);
       $response->assertJsonStructure([
-         'Winner player',
+         'Winner player'=> [
+            '*' => [
+               'id',
+               'name',
+               'email',
+               'successRate'
+            ]        
+         ],
          'message'
       ]);
       // winner player in DB matches response winner player
@@ -140,7 +155,8 @@ class DiceApiTest extends TestCase
             'name',
             'email',
             'successRate'
-         ]
+         ],
+         'message'
       ]);
       // update name matches name in DB after updating
       $this->assertEquals('New Name', $updatedUser->name);
@@ -166,7 +182,8 @@ class DiceApiTest extends TestCase
             'Dice 1',
             'Dice 2',
             'Result'
-         ]
+         ],
+         'message'
       ]);
       // the new game played has been counted (stored correctly)
       $this->assertEquals(($user->playedGames) + 1, $updatedUser->playedGames);
@@ -188,17 +205,26 @@ class DiceApiTest extends TestCase
 
    public function test_player_gets_own_list_of_games(){
       /* get player user */
-      $user = User::find(2);
+      $user = User::find(3);
       $this->actingAs($user, 'api');
 
       /* actions */
       $response = $this->getJson("/api/dice_game/players/{$user->id}/games");
-
+      
       /* check final status */
       $response->assertStatus(200);
       $response->assertJsonStructure([
-         
-      ]);     
-      $response->assertJsonFragment([]);
+         'Your success rate',
+         'Your games' => [ 
+             '*' => [ 
+                 'Game Number',
+                 'Dice 1',
+                 'Dice 2',
+                 'Result'
+             ]
+         ],
+         'message'
+     ]);
+     $response->assertJsonFragment(['Your success rate' => $user->successRate]);    
    }
 }

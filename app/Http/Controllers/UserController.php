@@ -31,8 +31,9 @@ class UserController extends Controller
         $players = User::role('player') -> orderBy('successRate', 'desc') -> paginate(10);   // ->get(); sin paginación
         
         if($players){   
-            return response([UserResource::collection($players),
-                       'message' => 'Request succesful'], 200);
+            return response([
+                UserResource::collection($players),
+                'message' => 'Request Successful'], 200);
         } else {
             return response(['error' => 'Request failed', 400]);
         }

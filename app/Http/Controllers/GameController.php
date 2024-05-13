@@ -105,13 +105,15 @@ class GameController extends Controller
          }
         
         $playerGames = User::find($id)->games;
+        $successRate = User::find($id)->successRate;
 
         if ($playerGames){
             if ($playerGames->isEmpty()) {
                 return response(['message' => 'You have no games'], 200);
             } else {
-                return response(['Your games' => GameResource::collection($playerGames),
-                                'message' => 'Request successful'], 200);   
+                return response(['Your success rate'  =>  $successRate,
+                                 'Your games' => GameResource::collection($playerGames),                                
+                                 'message' => 'Request successful'], 200);   
             }
         } else {
             return response(['error' => 'Request failed', 400]);

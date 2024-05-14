@@ -9,26 +9,30 @@ use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
-   //Middleware role/permission filter from controller, not from api routes
-   public function __construct()
-   {
+    //Middleware role/permission filter from controller, not from api routes
+    public function __construct()
+    {
         $this->middleware('can:game actions', [
             'only' => ['playGame', 'deletePlayerGames', 'showPlayerGames']
-        ]);       
+        ]);
     }
 
-   public function playGame($id)
-   {    
+    public function welcome()
+    {
+        return response()->json(['message' => 'Welcome to the Get 7 Dice Game']);
+    }
+    public function playGame($id)
+    {
         //authenticated selfplayer condition
-        $user = Auth::user(); 
-                  
+        $user = Auth::user();
+
         if ($user->id != $id) {
-            return response(['error' => 'Unauthorized'], 403);
-         }  
+            return response(['error' => 'Unauthorized'], 40);
+        }
 
         $dice1 = rand(1, 6);
         $dice2 = rand(1, 6);
-                
+
         //private function winLogic (logic of the game)
         $winGame = $this->winLogic($dice1, $dice2);
 
@@ -43,7 +47,7 @@ class GameController extends Controller
         $game->user->playedGames++;
         $game->user->save();
 
-        if ($winGame) {       
+        if ($winGame) {
             $game->user->wonGames++;
             $game->user->save();
         }
@@ -54,14 +58,16 @@ class GameController extends Controller
         $successRate = ($wonGames / $playedGames) * 100;
         $game->user->successRate =  $successRate;
         $game->user->save();
-        
-        if ($game){
-            return response(['game' => new GameResource($game),
-                            'message' => 'Request successful'], 200);
+
+        if ($game) {
+            return response([
+                'game' => new GameResource($game),
+                'message' => 'Request successful'
+            ], 200);
         } else {
             return response(['error' => 'Request failed'], 400);
         }
-    }    
+    }
 
     private function winLogic($dice1, $dice2): bool
     {
@@ -71,48 +77,56 @@ class GameController extends Controller
             $winGame = false;
         }
         return $winGame;
-    }    
-   
-   public function deletePlayerGames($id)
-   {
-       //authenticated selfplayer condition
-       $user = Auth::user(); 
-                  
-       if ($user->id != $id) {
-           return response(['error' => 'Unauthorized'], 403);
-        }
-            
-        $deleted = Game::where('user_id', $id)->delete();        
+    }
 
-        if($deleted){   
-            return response(['message' => 'Request succesful'], 200);
-        } else {
-            return response(['error' => 'Request failed', 400]);
-        }
-   }
-
-   public function showPlayerGames($id)
-   {       
+    public function deletePlayerGames($id)
+    {
         //authenticated selfplayer condition
-        $user = Auth::user(); 
-                  
+        $user = Auth::user();
+
         if ($user->id != $id) {
             return response(['error' => 'Unauthorized'], 403);
-         }
-        
-        $playerGames = User::find($id)->games;
+        }
 
-        if ($playerGames){
+        $deleted = Game::where('user_id', $id)->delete();
+
+        if ($deleted) {
+            $user->playedGames = 0;
+            $user->wonGames = 0;
+            $user->successRate = 0;
+            $user->save();
+
+            return response(['message' => 'All games deleted'], 200);
+        } else {
+            return response(['error' => 'Failed to delete games'], 400);
+        }
+    }
+
+    public function showPlayerGames($id)
+    {
+        //authenticated selfplayer condition
+        $user = Auth::user();
+
+        if ($user->id != $id) {
+            return response(['error' => 'Unauthorized'], 403);
+        }
+
+        $playerGames = User::find($id)->games;
+        $successRate = User::find($id)->successRate;
+
+        if ($playerGames) {
             if ($playerGames->isEmpty()) {
                 return response(['message' => 'You have no games'], 200);
             } else {
-                return response(['Your games' => GameResource::collection($playerGames),
-                                'message' => 'Request successful'], 200);   
+                return response([
+                    'Your success rate'  =>  $successRate,
+                    'Your games' => GameResource::collection($playerGames),
+                    'message' => 'Request successful'
+                ], 200);
             }
         } else {
             return response(['error' => 'Request failed', 400]);
-        }  
+        }
         // return response (['player id'=> $idPlayer]);    
     }
 }
-

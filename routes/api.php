@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,6 +16,48 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Welcome root route
+
+Route::group([
+    'prefix' => 'dice_game'
+    ], function () {
+    Route::get('/', [GameController::class, 'welcome']);
+});
+
+// USER login system routes with authentication (passport)
+
+Route::group([
+     'prefix' => 'dice_game'
+    ], function () {
+    Route::post('login', [AuthController::class, 'login']);  
+    Route::post('signup', [AuthController::class, 'signUp']);
+  
+    Route::group([
+      'middleware' => 'auth:api'
+    ], function() {
+        Route::get('logout', [AuthController::class, 'logout']);
+        Route::get('user', [AuthController::class, 'user']);
+    });
+});
+
+// ADMIN routes
+
+Route::group([
+  'prefix' => 'dice_game', 'middleware' => 'auth:api'
+  ], function () { 
+    Route::get('/players', [UserController::class, 'getAllPlayers']);
+    Route::get('/players/ranking', [UserController::class, 'getRanking']);
+    Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
+    Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
+});
+
+// PLAYER routes
+
+Route::group([
+  'prefix' => 'dice_game', 'middleware' => 'auth:api'
+  ], function() {
+    Route::post('/players/{id}/games', [GameController::class, 'playGame']); 
+    Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames']);
+    Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames']);
+    Route::put('/players/{id}', [UserController::class, 'updateName']);
 });

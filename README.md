@@ -1,10 +1,10 @@
 <p align="center"><img src="dices.webp" width="400" alt="Get 7 Dice Game Logo"></a></p>
 
-<p align="center">
-<title>
+
+<title align="center">
 Get 7 Dice Game Api
 </title>
-</p>
+
 
 ## About Dice Game Api
 

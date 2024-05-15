@@ -485,23 +485,4 @@ class DiceApiTest extends TestCase
          ]);
    }
 
-   // public function test_logout()
-   // {
-   //    /* get existing user */
-   //    $user = User::find(2);
-   //    $this->actingAs($user, 'api');
-
-   //    // Crear token de acceso
-   //    $tokenResult = $user->createToken('TestToken');
-   //    $token = $tokenResult->accessToken;
-
-   //    $response = $this->withHeaders([
-   //       'Authorization' => 'Bearer ' . $token,
-   //    ])->getJson('/api/dice_game/logout');
-
-   //    $response->assertStatus(200)
-   //       ->assertJson([
-   //          'message' => 'Successfully logged out'
-   //       ]);
-   // }
 }

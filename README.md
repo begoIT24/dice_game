@@ -1,9 +1,7 @@
-<p align="center"><img src="dices.webp" width="400" alt="Get 7 Dice Game Logo"></a></p>
+<p align="center"><img src="public/dices.png" width="400" alt="Get 7 Dice Game Logo"></a></p>
 
 
-<title align="center">
-Get 7 Dice Game Api
-</title>
+<h1 align="center">Get 7 Dice Game Api</h1>
 
 
 ## About Dice Game Api
@@ -13,12 +11,12 @@ The game logic is simple: It is a dice game played with two dice. If the sum of 
 
 ## Api Endpoints
 
-- POST /players : creates a player.
-- PUT /players/{id} : modifies the player's name.
-- DELETE /players/{id}/games: deletes the player's rolls.
-- GET /players: returns the list of all players in the system with their average success rate.
-- GET /players/{id}/games: returns the list of games played by a player.
-- GET /players/ranking: returns the average ranking of all the players in the system. That is, the average percentage of successes.
-- GET /players/ranking/loser: returns the player with the highest success rate.
-- GET /players/ranking/winner: returns the player with the best success rate.
+- **POST /players** : creates a player.
+- **PUT /players/{id}** : modifies the player's name.
+- **DELETE /players/{id}/games** : deletes the player's rolls.
+- **GET /players** : returns the list of all players in the system with their average success rate.
+- **GET /players/{id}/games** : returns the list of games played by a player.
+- **GET /players/ranking** : returns the average ranking of all the players in the system. That is, the average percentage of successes.
+- **GET /players/ranking/loser** : returns the player with the highest success rate.
+- **GET /players/ranking/winner** : returns the player with the best success rate.
 

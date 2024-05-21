@@ -11,8 +11,6 @@ The game logic is simple: It is a dice game played with two dice. If the sum of 
 
 ## Api Endpoints
 
-With prefix /dice_game/
-
 - **POST /players** : creates a player.
 - **PUT /players/{id}** : modifies the player's name.
 - **DELETE /players/{id}/games** : deletes the player's rolls.

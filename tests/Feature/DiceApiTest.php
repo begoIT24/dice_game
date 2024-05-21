@@ -40,7 +40,7 @@ class DiceApiTest extends TestCase
       $player = User::find(11);
 
       /* actions */
-      $response = $this->getJson('/api/dice_game/players');
+      $response = $this->getJson('/api/players');
       // dd($response->json());
 
       /* check final status */
@@ -67,7 +67,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* actions */
-      $response = $this->getJson('/api/dice_game/players');
+      $response = $this->getJson('/api/players');
 
       /* check final status */
       $response->assertStatus(403);
@@ -80,7 +80,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* actions */
-      $response = $this->getJson('/api/dice_game/players/ranking');
+      $response = $this->getJson('/api/players/ranking');
 
       /* check final status */
       $response->assertStatus(200);
@@ -98,7 +98,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* actions */
-      $response = $this->getJson('/api/dice_game/players/ranking');
+      $response = $this->getJson('/api/players/ranking');
 
       /* check final status */
       $response->assertStatus(403);
@@ -114,7 +114,7 @@ class DiceApiTest extends TestCase
       $loserPlayer = User::role('player')->orderBy('successRate', 'asc')->first();
 
       /* actions */
-      $response = $this->getJson('/api/dice_game/players/ranking/loser');
+      $response = $this->getJson('/api/players/ranking/loser');
 
       //json to array: fixing Cannot access offset of type string on string
       $responseArray = $response->json();    // para testing Laravel: ->json() equivale a json_decode            
@@ -143,7 +143,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* actions */
-      $response = $this->getJson('/api/dice_game/players/ranking/loser');
+      $response = $this->getJson('/api/players/ranking/loser');
 
       /* check final status */
       $response->assertStatus(403);
@@ -159,7 +159,7 @@ class DiceApiTest extends TestCase
       $winnerPlayer = User::role('player')->orderBy('successRate', 'desc')->first();
 
       /* actions */
-      $response = $this->getJson('/api/dice_game/players/ranking/winner');
+      $response = $this->getJson('/api/players/ranking/winner');
       $responseArray = $response->json();
 
       /* check final status */
@@ -186,7 +186,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* actions */
-      $response = $this->getJson('/api/dice_game/players/ranking/winner');
+      $response = $this->getJson('/api/players/ranking/winner');
 
       /* check final status */
       $response->assertStatus(403);
@@ -199,7 +199,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* actions */
-      $response = $this->putJson("/api/dice_game/players/{$user->id}", [
+      $response = $this->putJson("/api/players/{$user->id}", [
          'name' => 'New Name',
       ]);
       $updatedUser = User::find($user->id);
@@ -230,7 +230,7 @@ class DiceApiTest extends TestCase
       $existingName = $user2->name;
 
       /* actions */
-      $response = $this->putJson("/api/dice_game/players/{$user->id}", [
+      $response = $this->putJson("/api/players/{$user->id}", [
          'name' => $existingName,
       ]);
 
@@ -248,7 +248,7 @@ class DiceApiTest extends TestCase
       $user2 = User::find(3);
 
       /* actions */
-      $response = $this->putJson("/api/dice_game/players/{$user2->id}", [
+      $response = $this->putJson("/api/players/{$user2->id}", [
          'name' => 'New Name',
       ]);
 
@@ -268,7 +268,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* actions */
-      $response = $this->postJson("/api/dice_game/players/{$user->id}/games");
+      $response = $this->postJson("/api/players/{$user->id}/games");
       $updatedUser = User::find($user->id);
 
       /* check final status */
@@ -296,7 +296,7 @@ class DiceApiTest extends TestCase
       $user2 = User::find(3);
 
       /* actions */
-      $response = $this->postJson("/api/dice_game/players/{$user2->id}");
+      $response = $this->postJson("/api/players/{$user2->id}");
 
       /* check final status */
       $response->assertStatus(405);
@@ -309,7 +309,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* actions */
-      $response = $this->deleteJson("/api/dice_game/players/{$user->id}/games");
+      $response = $this->deleteJson("/api/players/{$user->id}/games");
       $deletedGames = Game::where('user_id', $user->id)->count();
 
       /* check final status */
@@ -330,7 +330,7 @@ class DiceApiTest extends TestCase
       $user2 = User::find(3);
 
       /* actions */
-      $response = $this->deleteJson("/api/dice_game/players/{$user2->id}/games");
+      $response = $this->deleteJson("/api/players/{$user2->id}/games");
 
       /* check final status */
       $response->assertStatus(403);
@@ -343,7 +343,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* actions */
-      $response = $this->deleteJson("/api/dice_game/players/{$user->id}/games");
+      $response = $this->deleteJson("/api/players/{$user->id}/games");
 
       /* check final status */
       $response->assertStatus(400);
@@ -359,7 +359,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* actions */
-      $response = $this->getJson("/api/dice_game/players/{$user->id}/games");
+      $response = $this->getJson("/api/players/{$user->id}/games");
 
       /* check final status */
       $response->assertStatus(200);
@@ -389,7 +389,7 @@ class DiceApiTest extends TestCase
 
 
       /* actions */
-      $response = $this->getJson("/api/dice_game/players/{$user2->id}/games");
+      $response = $this->getJson("/api/players/{$user2->id}/games");
 
       /* check final status */
       $response->assertStatus(403);
@@ -408,7 +408,7 @@ class DiceApiTest extends TestCase
          'password_confirmation' => '1234',
       ];
 
-      $response = $this->postJson('/api/dice_game/signup', $userData);
+      $response = $this->postJson('/api/signup', $userData);
 
       $response->assertStatus(201)
          ->assertJson([
@@ -427,7 +427,7 @@ class DiceApiTest extends TestCase
          'password_confirmation' => '1234',
       ];
 
-      $response = $this->postJson('/api/dice_game/signup', $userData);
+      $response = $this->postJson('/api/signup', $userData);
 
       $response->assertStatus(422)
          ->assertJson([
@@ -446,7 +446,7 @@ class DiceApiTest extends TestCase
          'email' => $user->email,
          'password' => '1234',
       ];
-      $response = $this->postJson('/api/dice_game/login', $loginData);
+      $response = $this->postJson('/api/login', $loginData);
 
       $response->assertStatus(200)
          ->assertJsonStructure([
@@ -460,7 +460,7 @@ class DiceApiTest extends TestCase
          'email' => 'mail@mail.com',
          'password' => '1234',
       ];
-      $response = $this->postJson('/api/dice_game/login', $loginData);
+      $response = $this->postJson('/api/login', $loginData);
 
       $response->assertStatus(401)
          ->assertJson([
@@ -477,7 +477,7 @@ class DiceApiTest extends TestCase
          'email' => $user->email,
          'password' => 'hola',
       ];
-      $response = $this->postJson('/api/dice_game/login', $loginData);
+      $response = $this->postJson('/api/login', $loginData);
 
       $response->assertStatus(401)
          ->assertJson([

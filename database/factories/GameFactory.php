@@ -23,7 +23,7 @@ class GameFactory extends Factory
             'user_id' => User::role($playerRole)->inRandomOrder()->first()->id,
             'dice1' => $this->faker->numberBetween(1, 6),
             'dice2' => $this->faker->numberBetween(1, 6),
-            'winGame' => $this->faker->boolean,
+            'win_game' => $this->faker->boolean,
         ];
     }
 }

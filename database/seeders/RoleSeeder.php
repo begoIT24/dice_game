@@ -22,10 +22,10 @@ class RoleSeeder extends Seeder
         $rolePlayer = Role::create(['name' => 'player', 'guard_name' => 'api']);
        
         //UserController permissions
-        Permission::create(['name' => 'update name', 'guard_name' => 'api'])->assignRole([$rolePlayer]);         //Permission 1
-        Permission::create(['name' => 'players information', 'guard_name' => 'api'])->assignRole([$roleAdmin]);  //Permission 2
+        Permission::create(['name' => 'update_name', 'guard_name' => 'api'])->assignRole([$rolePlayer]);         //Permission 1
+        Permission::create(['name' => 'players_information', 'guard_name' => 'api'])->assignRole([$roleAdmin]);  //Permission 2
        
         //GameController permissions
-        Permission::create(['name' => 'game actions', 'guard_name' => 'api'])->assignRole([$rolePlayer]);       //Permission 3    
+        Permission::create(['name' => 'game_actions', 'guard_name' => 'api'])->assignRole([$rolePlayer]);       //Permission 3    
     }
 }

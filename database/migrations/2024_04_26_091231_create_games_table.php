@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('user_id');
             $table->tinyInteger('dice1');
             $table->tinyInteger('dice2');
-            $table->boolean('winGame');
+            $table->boolean('win_game');
             $table->timestamps();
         });
     }

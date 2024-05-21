@@ -17,47 +17,37 @@ use App\Http\Controllers\UserController;
 */
 
 // Welcome root route
-
-Route::group([
-    'prefix' => 'dice_game'
-    ], function () {
-    Route::get('/', [GameController::class, 'welcome']);
-});
+Route::get('/', [GameController::class, 'welcome']);
 
 // USER login system routes with authentication (passport)
+Route::group([], function () {
+  Route::post('login', [AuthController::class, 'login']);
+  Route::post('signup', [AuthController::class, 'signUp']);
 
-Route::group([
-     'prefix' => 'dice_game'
-    ], function () {
-    Route::post('login', [AuthController::class, 'login']);  
-    Route::post('signup', [AuthController::class, 'signUp']);
-  
-    Route::group([
-      'middleware' => 'auth:api'
-    ], function() {
-        Route::get('logout', [AuthController::class, 'logout']);
-        Route::get('user', [AuthController::class, 'user']);
-    });
+  Route::group([
+    'middleware' => 'auth:api'
+  ], function () {
+    Route::get('logout', [AuthController::class, 'logout']);
+    Route::get('user', [AuthController::class, 'user']);
+  });
 });
 
 // ADMIN routes
-
 Route::group([
-  'prefix' => 'dice_game', 'middleware' => 'auth:api'
-  ], function () { 
-    Route::get('/players', [UserController::class, 'getAllPlayers']);
-    Route::get('/players/ranking', [UserController::class, 'getRanking']);
-    Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
-    Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
+  'middleware' => 'auth:api'
+], function () {
+  Route::get('/players', [UserController::class, 'getAllPlayers']);
+  Route::get('/players/ranking', [UserController::class, 'getRanking']);
+  Route::get('/players/ranking/loser', [UserController::class, 'getLoser']);
+  Route::get('/players/ranking/winner', [UserController::class, 'getWinner']);
 });
 
 // PLAYER routes
-
 Route::group([
-  'prefix' => 'dice_game', 'middleware' => 'auth:api'
-  ], function() {
-    Route::post('/players/{id}/games', [GameController::class, 'playGame']); 
-    Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames']);
-    Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames']);
-    Route::put('/players/{id}', [UserController::class, 'updateName']);
+  'middleware' => 'auth:api'
+], function () {
+  Route::post('/players/{id}/games', [GameController::class, 'playGame']);
+  Route::delete('/players/{id}/games', [GameController::class, 'deletePlayerGames']);
+  Route::get('/players/{id}/games', [GameController::class, 'showPlayerGames']);
+  Route::put('/players/{id}', [UserController::class, 'updateName']);
 });

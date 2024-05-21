@@ -13,10 +13,10 @@ class UserController extends Controller
     //Middleware role/permission filter from controller, not from api routes
     public function __construct()
     {
-        $this->middleware('can:players information', [
+        $this->middleware('can:players_information', [
             'only' => ['getAllPlayers', 'getRanking', 'getLoser', 'getWinner']
         ]);
-        $this->middleware('can:update name', [
+        $this->middleware('can:update_name', [
             'only' => ['updateName']
         ]);
     }
@@ -28,7 +28,7 @@ class UserController extends Controller
             return response(['error' => 'Unauthorized'], 403);
         }
 
-        $players = User::role('player')->orderBy('successRate', 'desc')->paginate(10);   // ->get(); sin paginación
+        $players = User::role('player')->orderBy('success_rate', 'desc')->paginate(10);   // ->get(); sin paginación
 
         if ($players) {
             return response([
@@ -55,16 +55,16 @@ class UserController extends Controller
         $playersWithGames = 0;
 
         foreach ($players as $player) {
-            if ($player->playedGames > 0)
-                $successRateSum += $player->successRate;
-            $playersWithGames++;
+            if ($player->played_games > 0)
+                $successRateSum += $player->success_rate;
+                $playersWithGames++;
         }
 
         $averageRanking = ($playersWithGames > 0) ? ($successRateSum / $playersWithGames) : 0;
 
         if ($averageRanking) {
             return response([
-                'averageRanking' => $averageRanking,
+                'average_ranking' => $averageRanking,
                 'message' => 'Request succesful'
             ], 200);
         } else {
@@ -79,11 +79,11 @@ class UserController extends Controller
             return response(['error' => 'Unauthorized'], 403);
         }
 
-        $players = User::role('player')->orderBy('successRate', 'asc')->take(1)->get();
+        $players = User::role('player')->orderBy('success_rate', 'asc')->take(1)->get();
 
         if ($players) {
             return response([
-                'Loser player' => UserResource::collection($players),
+                'loser_player' => UserResource::collection($players),
                 'message' => 'Request Successful'
             ], 200);
         } else {
@@ -102,11 +102,11 @@ class UserController extends Controller
             return response(['error' => 'Unauthorized'], 403);
         }
 
-        $players = User::role('player')->orderBy('successRate', 'desc')->take(1)->get();
+        $players = User::role('player')->orderBy('success_rate', 'desc')->take(1)->get();
 
         if ($players) {
             return response([
-                'Winner player' => UserResource::collection($players),
+                'winner_player' => UserResource::collection($players),
                 'message' => 'Request Successful'
             ], 200);
         } else {

@@ -20,10 +20,10 @@ class GameResource extends JsonResource
         } else $resultString = "Game Lost";
 
         return [
-            'Game Number' => $this->id,
-            'Dice 1' => $this->dice1,
-            'Dice 2' => $this->dice2,
-            'Result' => $resultString,
+            'game_number' => $this->id,
+            'dice1' => $this->dice1,
+            'dice2' => $this->dice2,
+            'result' => $resultString,
         ];
     }
 }

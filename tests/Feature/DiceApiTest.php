@@ -51,7 +51,7 @@ class DiceApiTest extends TestCase
                'id',
                'name',
                'email',
-               'successRate'
+               'success_rate'
             ]
          ],
          'message'
@@ -85,10 +85,10 @@ class DiceApiTest extends TestCase
       /* check final status */
       $response->assertStatus(200);
       $response->assertJsonStructure([
-         'averageRanking',
+         'average_ranking',
          'message'
       ]);
-      $this->assertIsNumeric($response['averageRanking']);
+      $this->assertIsNumeric($response['average_ranking']);
    }
 
    public function test_player_not_get_ranking()
@@ -111,7 +111,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* get player with lowest success rate */
-      $loserPlayer = User::role('player')->orderBy('successRate', 'asc')->first();
+      $loserPlayer = User::role('player')->orderBy('success_rate', 'asc')->first();
 
       /* actions */
       $response = $this->getJson('/api/players/ranking/loser');
@@ -122,18 +122,18 @@ class DiceApiTest extends TestCase
       /* check final status */
       $response->assertStatus(200);
       $response->assertJsonStructure([
-         'Loser player' => [
+         'loser_player' => [
             '*' => [
                'id',
                'name',
                'email',
-               'successRate'
+               'success_rate'
             ]
          ],
          'message'
       ]);
       // loser player in DB matches response loser player
-      $this->assertEquals($loserPlayer->id, $responseArray['Loser player'][0]['id']);
+      $this->assertEquals($loserPlayer->id, $responseArray['loser_player'][0]['id']);
    }
 
    public function  test_player_not_get_loser()
@@ -156,7 +156,7 @@ class DiceApiTest extends TestCase
       $this->actingAs($user, 'api');
 
       /* get player with highest success rate */
-      $winnerPlayer = User::role('player')->orderBy('successRate', 'desc')->first();
+      $winnerPlayer = User::role('player')->orderBy('success_rate', 'desc')->first();
 
       /* actions */
       $response = $this->getJson('/api/players/ranking/winner');
@@ -165,18 +165,18 @@ class DiceApiTest extends TestCase
       /* check final status */
       $response->assertStatus(200);
       $response->assertJsonStructure([
-         'Winner player' => [
+         'winner_player' => [
             '*' => [
                'id',
                'name',
                'email',
-               'successRate'
+               'success_rate'
             ]
          ],
          'message'
       ]);
       // winner player in DB matches response winner player
-      $this->assertEquals($winnerPlayer->id, $responseArray['Winner player'][0]['id']);
+      $this->assertEquals($winnerPlayer->id, $responseArray['winner_player'][0]['id']);
    }
 
    public function  test_player_not_get_winner()
@@ -211,7 +211,7 @@ class DiceApiTest extends TestCase
             'id',
             'name',
             'email',
-            'successRate'
+            'success_rate'
          ],
          'message'
       ]);
@@ -275,15 +275,15 @@ class DiceApiTest extends TestCase
       $response->assertStatus(200);
       $response->assertJsonStructure([
          'game' => [
-            'Game Number',
-            'Dice 1',
-            'Dice 2',
-            'Result'
+            'game_number',
+            'dice1',
+            'dice2',
+            'result'
          ],
          'message'
       ]);
       // the new game played has been counted (stored correctly)
-      $this->assertEquals(($user->playedGames) + 1, $updatedUser->playedGames);
+      $this->assertEquals(($user->played_games) + 1, $updatedUser->played_games);
    }
 
    public function test_player_not_play_another_player_game()
@@ -364,18 +364,18 @@ class DiceApiTest extends TestCase
       /* check final status */
       $response->assertStatus(200);
       $response->assertJsonStructure([
-         'Your success rate',
-         'Your games' => [
+         'your_success_rate',
+         'your_games' => [
             '*' => [
-               'Game Number',
-               'Dice 1',
-               'Dice 2',
-               'Result'
+               'game_number',
+               'dice1',
+               'dice2',
+               'result'
             ]
          ],
          'message'
       ]);
-      $response->assertJsonFragment(['Your success rate' => $user->successRate]);
+      $response->assertJsonFragment(['your_success_rate' => $user->success_rate]);
    }
 
    public function test_player_not_get_another_player_list_of_games()

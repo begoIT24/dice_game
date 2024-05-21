@@ -18,14 +18,14 @@ class PlayerStadisticSeeder extends Seeder
 
         foreach ($users as $user) {           
             $playedGames = $user->games()->count();         
-            $wonGames = $user->games()->where('winGame', true)->count();
+            $wonGames = $user->games()->where('win_game', true)->count();
             $successRate = ($playedGames > 0) ? ($wonGames / $playedGames) * 100 : 0;
 
             // Update stadistics of players in users table
             $user->update([
-                'playedGames' => $playedGames,
-                'wonGames' => $wonGames,
-                'successRate' => $successRate,
+                'played_games' => $playedGames,
+                'won_games' => $wonGames,
+                'success_rate' => $successRate,
             ]);
         }
     }

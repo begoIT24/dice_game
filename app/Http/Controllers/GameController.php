@@ -12,7 +12,7 @@ class GameController extends Controller
     //Middleware role/permission filter from controller, not from api routes
     public function __construct()
     {
-        $this->middleware('can:game actions', [
+        $this->middleware('can:game_actions', [
             'only' => ['playGame', 'deletePlayerGames', 'showPlayerGames']
         ]);
     }
@@ -40,23 +40,23 @@ class GameController extends Controller
         $game->user_id = $id;
         $game->dice1 = $dice1;
         $game->dice2 = $dice2;
-        $game->winGame = $winGame;
+        $game->win_game = $winGame;
         $game->save();   //save actual game
 
         //update number of played and won games for actual user
-        $game->user->playedGames++;
+        $game->user->played_games++;
         $game->user->save();
 
         if ($winGame) {
-            $game->user->wonGames++;
+            $game->user->won_games++;
             $game->user->save();
         }
 
         //update successRate at users table
-        $playedGames = $game->user->playedGames;
-        $wonGames = $game->user->wonGames;
+        $playedGames = $game->user->played_games;
+        $wonGames = $game->user->won_games;
         $successRate = ($wonGames / $playedGames) * 100;
-        $game->user->successRate =  $successRate;
+        $game->user->success_rate =  $successRate;
         $game->user->save();
 
         if ($game) {
@@ -91,9 +91,9 @@ class GameController extends Controller
         $deleted = Game::where('user_id', $id)->delete();
 
         if ($deleted) {
-            $user->playedGames = 0;
-            $user->wonGames = 0;
-            $user->successRate = 0;
+            $user->played_games = 0;
+            $user->won_games = 0;
+            $user->success_rate = 0;
             $user->save();
 
             return response(['message' => 'All games deleted'], 200);
@@ -112,15 +112,15 @@ class GameController extends Controller
         }
 
         $playerGames = User::find($id)->games;
-        $successRate = User::find($id)->successRate;
+        $successRate = User::find($id)->success_rate;
 
         if ($playerGames) {
             if ($playerGames->isEmpty()) {
                 return response(['message' => 'You have no games'], 200);
             } else {
                 return response([
-                    'Your success rate'  =>  $successRate,
-                    'Your games' => GameResource::collection($playerGames),
+                    'your_success_rate'  =>  $successRate,
+                    'your_games' => GameResource::collection($playerGames),
                     'message' => 'Request successful'
                 ], 200);
             }

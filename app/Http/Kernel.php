@@ -70,9 +70,8 @@ class Kernel extends HttpKernel
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         
-        'players information' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-        'login management' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-        'update name' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-        'game actions'=> \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'players_information' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'update_name' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'game_actions'=> \Spatie\Permission\Middleware\PermissionMiddleware::class,
     ];
 }

@@ -408,7 +408,7 @@ class DiceApiTest extends TestCase
          'password_confirmation' => '1234',
       ];
 
-      $response = $this->postJson('/api/signup', $userData);
+      $response = $this->postJson('/api/players', $userData);
 
       $response->assertStatus(201)
          ->assertJson([
@@ -427,7 +427,7 @@ class DiceApiTest extends TestCase
          'password_confirmation' => '1234',
       ];
 
-      $response = $this->postJson('/api/signup', $userData);
+      $response = $this->postJson('/api/players', $userData);
 
       $response->assertStatus(422)
          ->assertJson([

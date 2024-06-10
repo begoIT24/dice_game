@@ -17,6 +17,6 @@ The game logic is simple: It is a dice game played with two dice. If the sum of 
 - **GET /players** : returns the list of all players in the system with their average success rate.
 - **GET /players/{id}/games** : returns the list of games played by a player.
 - **GET /players/ranking** : returns the average ranking of all the players in the system. That is, the average percentage of successes.
-- **GET /players/ranking/loser** : returns the player with the highest success rate.
-- **GET /players/ranking/winner** : returns the player with the best success rate.
+- **GET /players/ranking/loser** : returns the player with the lowest success rate.
+- **GET /players/ranking/winner** : returns the player with the highest success rate.
 
